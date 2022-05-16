@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokerConverter", "BrokerConverter\BrokerConverter.csproj", "{4E8A1AA7-2A93-44CF-870C-64D9E04BA013}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokerConverterUnitTests", "BrokerConverterUnitTests\BrokerConverterUnitTests.csproj", "{C3342BA2-D070-4D46-BD66-6138D2C01411}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4E8A1AA7-2A93-44CF-870C-64D9E04BA013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E8A1AA7-2A93-44CF-870C-64D9E04BA013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E8A1AA7-2A93-44CF-870C-64D9E04BA013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E8A1AA7-2A93-44CF-870C-64D9E04BA013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3342BA2-D070-4D46-BD66-6138D2C01411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3342BA2-D070-4D46-BD66-6138D2C01411}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3342BA2-D070-4D46-BD66-6138D2C01411}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3342BA2-D070-4D46-BD66-6138D2C01411}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {13D0D7FD-9D9C-40BC-8954-F3B72C390F65}
+	EndGlobalSection
+EndGlobal
