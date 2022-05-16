@@ -8,7 +8,7 @@ namespace BrokerConverter
 {
     public interface ICurrencyRateProvider
     {
-        bool CanHandle(Currency targetCurrency, Currency sourceCurrency);
-        decimal GetRate(DateTime dateCurrency, Currency targetCurrency, Currency sourceCurrency);
+        bool CanHandle(Currency sourceCurrency, Currency targetCurrency);
+        decimal GetRate(DateTime dateCurrency, Currency sourceCurrency, Currency targetCurrency);
     }
 }

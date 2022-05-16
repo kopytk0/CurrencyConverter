@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace BrokerConverter
 {
-    internal class NbpCurrencyProvider : ICurrencyRateProvider
+    public class NbpCurrencyProvider : ICurrencyRateProvider
     {
         private readonly Dictionary<Currency, YearlyCurrencyRates> _rates; // source to PLN
 
@@ -17,11 +17,11 @@ namespace BrokerConverter
             _rates = new Dictionary<Currency, YearlyCurrencyRates>();
         }
 
-        public bool CanHandle(Currency targetCurrency, Currency sourceCurrency)
+        public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
         {
             if (targetCurrency == sourceCurrency)
             {
-                return false;
+                return true;
             }
             
             return targetCurrency == Currency.PLN && sourceCurrency <= (Currency)33;
