@@ -24,7 +24,7 @@ namespace BrokerConverter
         }
 
         /// <summary>
-        /// Adds exchange rate for given year
+        /// Adds exchange rates for given year
         /// </summary>
         internal YearlyCurrencyRates(Currency sourceCurrency, Currency targetCurrency, ushort year, IEnumerable<KeyValuePair<DateTime, decimal>> rates) 
             : this(sourceCurrency, targetCurrency)

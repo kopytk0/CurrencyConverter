@@ -31,15 +31,13 @@ namespace BrokerConverterUnitTests
         public void TestGetRate()
         {
             var rates = GetSampleRates();
+
             Assert.Equal(1.17m, rates.GetRate(new DateTime(5, 12, 29)));
             Assert.Equal(1.18m, rates.GetRate(new DateTime(5, 12, 15)));
             Assert.Equal(1.13m, rates.GetRate(new DateTime(5, 02, 1)));
-
+            
             Assert.Equal(1.17m, rates.GetRate(new DateTime(5, 12, 31)));
             Assert.Equal(2m, rates.GetRate(new DateTime(5, 01, 30)));
-
-            Assert.Throws<KeyNotFoundException>(() => rates.GetRate(new DateTime(4, 1, 1)));
-            Assert.Throws<KeyNotFoundException>(() => rates.GetRate(new DateTime(42, 1, 1)));
 
             Assert.False(rates.TryGetRate(new DateTime(4, 1, 1), out var rate));
             Assert.False(rates.TryGetRate(new DateTime(3, 1, 1), out rate));
@@ -69,6 +67,10 @@ namespace BrokerConverterUnitTests
         public void TestExceptions()
         {
             Assert.Throws<ArgumentException>(() => new YearlyCurrencyRates(Currency.USD, Currency.USD));
+
+            var rates = GetSampleRates();
+            Assert.Throws<KeyNotFoundException>(() => rates.GetRate(new DateTime(4, 1, 1)));
+            Assert.Throws<KeyNotFoundException>(() => rates.GetRate(new DateTime(42, 1, 1)));
         }
         
     }

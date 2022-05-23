@@ -62,6 +62,11 @@ namespace BrokerConverter
 
         private void GetNbpRates(int year, Currency sourceCurrency)
         {
+            if (!_rates.TryGetValue(sourceCurrency, out var yearlyRates))
+            {
+                throw new Exception("No yearly rates object for currency");
+            }
+
             var month = DateTime.Now.Year == year ? DateTime.Now.Month : 12;
             var day = DateTime.Now.Year == year ? DateTime.Now.Day - 1 : 31;
             var source =
@@ -83,12 +88,7 @@ namespace BrokerConverter
                 return new KeyValuePair<DateTime, decimal>(e.GetProperty("effectiveDate").GetDateTime(), e.GetProperty("mid").GetDecimal());
             });
 
-            if (!_rates.TryGetValue(sourceCurrency, out var yearlyRates))
-            {
-                throw new Exception("No yearly rates object for currency");
-            }
             yearlyRates.SetRates((ushort)year, rates);
-
         }
     }
 }

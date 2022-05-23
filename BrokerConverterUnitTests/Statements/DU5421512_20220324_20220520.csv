@@ -1,0 +1,107 @@
+﻿Statement,Header,Field Name,Field Value
+Statement,Data,BrokerName,Interactive Brokers Central Europe Zrt.
+Statement,Data,BrokerAddress,"Madach Imre ut 13-14, Floor 5, Budapest, 1075, Hungary"
+Statement,Data,Title,Realized Summary
+Statement,Data,Period,"March 24, 2022 - May 20, 2022"
+Statement,Data,WhenGenerated,"2022-05-21, 09:05:30 EDT"
+Account Information,Header,Field Name,Field Value
+Account Information,Data,Name,Nancy Pelosi
+Account Information,Data,Account,AB1234567
+Account Information,Data,Account Type,Individual
+Account Information,Data,Customer Type,Individual
+Account Information,Data,Account Capabilities,Margin
+Account Information,Data,Base Currency,PLN
+Net Asset Value,Header,Asset Class,Prior Total,Current Long,Current Short,Current Total,Change
+Net Asset Value,Data,Cash ,0,12064.289814124,0,12064.289814124,12064.289814124
+Net Asset Value,Data,Total,0,12064.289814124,0,12064.289814124,12064.289814124
+Net Asset Value,Header,Time Weighted Rate of Return
+Net Asset Value,Data,-5.117657773%
+Change in NAV,Header,Field Name,Field Value
+Change in NAV,Data,Starting Value,0
+Change in NAV,Data,Details not available,
+Change in NAV,Data,Ending Value,12064.289814124
+Realized & Unrealized Performance Summary,Header,Asset Category,Symbol,Cost Adj.,Realized S/T Profit,Realized S/T Loss,Realized L/T Profit,Realized L/T Loss,Realized Total,Unrealized S/T Profit,Unrealized S/T Loss,Unrealized L/T Profit,Unrealized L/T Loss,Unrealized Total,Total,Code
+Realized & Unrealized Performance Summary,Data,Stocks,AAPL,0,0,-4.918116671,0,0,-4.918116671,0,0,0,0,0,-4.918116671,
+Realized & Unrealized Performance Summary,Data,Total,,0,0,-4.918116671,0,0,-4.918116671,0,0,0,0,0,-4.918116671,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,SPY 27APR22 420.0 C,0,27.032094444,0,0,0,27.032094444,0,0,0,0,0,27.032094444,
+Realized & Unrealized Performance Summary,Data,Total,,0,27.032094444,0,0,0,27.032094444,0,0,0,0,0,27.032094444,
+Realized & Unrealized Performance Summary,Data,Total (All Assets),,0,27.032094444,-4.918116671,0,0,22.113977772,0,0,0,0,0,22.113977772,
+Trades,Header,DataDiscriminator,Asset Category,Currency,Symbol,Date/Time,Quantity,T. Price,Proceeds,Comm/Fee,Basis,Realized P/L,Code
+Trades,Data,Order,Stocks,USD,AAPL,"2022-04-26, 11:49:34",10,158.4,-1584,-1,1585,0,O
+Trades,Data,Order,Stocks,USD,AAPL,"2022-04-26, 11:50:24",-10,158.49,1584.9,-1.00938299,-1585,-1.109383,C
+Trades,SubTotal,,Stocks,USD,AAPL,,0,,0.9,-2.00938299,0,-1.109383,
+Trades,Total,,Stocks,USD,,,,,0.9,-2.00938299,0,-1.109383, 
+Trades,Total,,Stocks,PLN,,,,,3.98988,-8.907996671,0,-4.918116716, 
+Trades,Header,DataDiscriminator,Asset Category,Currency,Symbol,Date/Time,Quantity,T. Price,Proceeds,Comm/Fee,Basis,Realized P/L,Code
+Trades,Data,Order,Equity and Index Options,USD,SPY 27APR22 420.0 C,"2022-04-26, 11:55:20",1,3.58,-358,-1.35915,359.35915,0,O
+Trades,Data,Order,Equity and Index Options,USD,SPY 27APR22 420.0 C,"2022-04-26, 12:11:52",-1,3.67,367,-1.5432017,-359.35915,6.097648,C
+Trades,SubTotal,,Equity and Index Options,USD,SPY 27APR22 420.0 C,,0,,9,-2.9023517,0,6.097648,
+Trades,Total,,Equity and Index Options,USD,,,,,9,-2.9023517,0,6.097648, 
+Trades,Total,,Equity and Index Options,PLN,,,,,39.8988,-12.866705556,0,27.032093114, 
+Trades,Header,DataDiscriminator,Asset Category,Currency,Symbol,Date/Time,Quantity,T. Price,Proceeds,Comm in PLN,,,Code
+Trades,Data,Order,Forex,PLN,USD.PLN,"2022-04-28, 18:03:51",-4.98826531,4.46845,22.289814124,0,,,
+Trades,SubTotal,,Forex,PLN,USD.PLN,,-4.98826531,,22.289814124,0,,,
+Trades,Total,,Forex,PLN,,,,,22.289814124,0,,, 
+Deposits & Withdrawals,Header,Currency,Settle Date,Description,Amount
+Deposits & Withdrawals,Data,HUF,2022-03-24,Adjustment: Cash Receipt/Disbursement/Transfer,1000000
+Deposits & Withdrawals,Data,Total,,,1000000
+Deposits & Withdrawals,Data,Total in PLN,,,12715
+Codes,Header,Code,Meaning,Code (Cont.),Meaning (Cont.)
+Codes,Data,A,Assignment
+Codes,Data,ADR,ADR Fee Accrual
+Codes,Data,AEx,Automatic exercise for dividend-related recommendation.
+Codes,Data,Adj,Adjustment
+Codes,Data,Al,Allocation
+Codes,Data,Aw,Away Trade
+Codes,Data,B,Automatic Buy-in
+Codes,Data,Bo,Direct Borrow
+Codes,Data,C,Closing Trade
+Codes,Data,CD,Cash Delivery
+Codes,Data,CP,Complex Position
+Codes,Data,Ca,Cancelled
+Codes,Data,Co,Corrected Trade
+Codes,Data,Cx,Part or all of this transaction was a Crossing executed as dual agent by IB for two IB customers
+Codes,Data,ETF,ETF Creation/Redemption
+Codes,Data,Ep,Resulted from an Expired Position
+Codes,Data,Ex,Exercise
+Codes,Data,FP,"IB acted as agent for the fractional share portion of this trade, which was executed by an IB affiliate as principal."
+Codes,Data,FPA,IB acted as agent for both the fractional share portion and the whole share portion of this trade; the fractional share portion was executed by an IB Affiliate as principal.
+Codes,Data,G,Trade in Guaranteed Account Segment
+Codes,Data,GEA,Exercise or Assignment resulting from offsetting positions
+Codes,Data,HC,Highest Cost tax basis election
+Codes,Data,HFI,Investment Transferred to Hedge Fund
+Codes,Data,HFR,Redemption from Hedge Fund
+Codes,Data,I,Internal Transfer
+Codes,Data,IA,This transaction was executed against an IB affiliate
+Codes,Data,INV,Investment Transfer from Investor
+Codes,Data,IPO,This transaction was executed as part of an IPO in which IB was a member of the selling group and is classified as a Principal trade.
+Codes,Data,L,Ordered by IB (Margin Violation)
+Codes,Data,LD,Adjusted by Loss Disallowed from Wash Sale
+Codes,Data,LI,"Last In, First Out (LIFO) tax basis election"
+Codes,Data,LT,Long Term P/L
+Codes,Data,Lo,Direct Loan
+Codes,Data,M,Entered manually by IB
+Codes,Data,MEx,Manual exercise for dividend-related recommendation.
+Codes,Data,ML,Maximize Losses tax basis election
+Codes,Data,MLG,Maximize Long Term Gain tax basis election
+Codes,Data,MLL,Maximize Long Term Loss tax basis election
+Codes,Data,MSG,Maximize Short Term Gain tax basis election
+Codes,Data,MSL,Maximize Short Term Loss tax basis election
+Codes,Data,O,Opening Trade
+Codes,Data,P,Partial Execution
+Codes,Data,PI,Price Improvement
+Codes,Data,Po,Interest or Dividend Accrual Posting
+Codes,Data,Pr,Part or all of this transaction was executed by the Exchange as a Crossing by IB against an IB affiliate and is therefore classified as a Principal and not an agency trade
+Codes,Data,R,Dividend Reinvestment
+Codes,Data,RED,Redemption to Investor
+Codes,Data,RP,"IB acted as agent for the fractional share portion of this trade, which was executed by an IB affiliate as riskless principal."
+Codes,Data,RPA,IB acted as agent for both the fractional share portion and the whole share portion of this trade; the fractional share portion was executed by an IB Affiliate as riskless principal.
+Codes,Data,Re,Interest or Dividend Accrual Reversal
+Codes,Data,Ri,Reimbursement
+Codes,Data,SI,This order was solicited by Interactive Brokers
+Codes,Data,SL,Specific Lot tax basis election
+Codes,Data,SO,This order was marked as solicited by your Introducing Broker
+Codes,Data,SS,Customer designated this trade for shortened settlement and so is subject to execution at prices above the prevailing market
+Codes,Data,ST,Short Term P/L
+Codes,Data,T,Transfer
+Codes,Data,Un,Unvested shares from stock grant

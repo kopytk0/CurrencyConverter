@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -6,6 +6,7 @@
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
@@ -22,6 +23,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BrokerConverter\BrokerConverter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <Resource Include="Statements\DU5421512_20220324_20220520.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Statements\DU5421512_20220324_20220520.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
