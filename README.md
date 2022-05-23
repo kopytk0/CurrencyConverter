@@ -8,4 +8,4 @@ A framework to get official currency conversion rates, transaction history from 
 ## Transaction providers:
 
 - `IbkrFileTransactionProvider`
-  - Provides transaction from CSV statements from Interactive Brokers 
+  - Provides transactions from Interactive Brokers' statement in CSV format
