@@ -1,6 +1,8 @@
+# Currency Converter
+
 A framework to get official currency conversion rates, transaction history from brokers' APIs and automate currency conversion of transactions
 
-# `CurrencyConverter`
+## `CurrencyConverter`
 
 - Allows converting currencies using specified provider
 
