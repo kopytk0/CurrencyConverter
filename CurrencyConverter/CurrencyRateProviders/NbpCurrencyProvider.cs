@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace BrokerConverter.CurrencyRateProviders;
+namespace CurrencyConverter.CurrencyRateProviders;
 
 /// <summary>
 ///     This class provides the functionality to get the currency rates from the Narodowy Bank Polski.

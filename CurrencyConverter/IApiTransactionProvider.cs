@@ -1,6 +1,6 @@
-﻿using BrokerConverter.TransactionProviders;
+﻿using CurrencyConverter.TransactionProviders;
 
-namespace BrokerConverter;
+namespace CurrencyConverter;
 
 public interface IApiTransactionProvider
 {

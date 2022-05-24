@@ -2,7 +2,7 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 
-namespace BrokerConverter.TransactionProviders;
+namespace CurrencyConverter.TransactionProviders;
 
 /// <summary>
 ///     This class provides transactions from IBKR from summary in CSV format

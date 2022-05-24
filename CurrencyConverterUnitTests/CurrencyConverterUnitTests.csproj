@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BrokerConverter\BrokerConverter.csproj" />
+    <ProjectReference Include="..\CurrencyConverter\CurrencyConverter.csproj" />
   </ItemGroup>
 
   <ItemGroup>

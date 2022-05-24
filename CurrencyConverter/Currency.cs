@@ -1,4 +1,4 @@
-﻿namespace BrokerConverter;
+﻿namespace CurrencyConverter;
 
 public enum Currency
 {

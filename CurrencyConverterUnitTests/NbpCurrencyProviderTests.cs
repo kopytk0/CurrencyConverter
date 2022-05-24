@@ -1,9 +1,9 @@
 ﻿using System;
-using BrokerConverter;
-using BrokerConverter.CurrencyRateProviders;
+using CurrencyConverter;
+using CurrencyConverter.CurrencyRateProviders;
 using Xunit;
 
-namespace BrokerConverterUnitTests;
+namespace CurrencyConverterUnitTests;
 
 public class NbpCurrencyProviderTests
 {

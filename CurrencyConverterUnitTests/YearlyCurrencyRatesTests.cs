@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using BrokerConverter;
+using CurrencyConverter;
 using Xunit;
 
-namespace BrokerConverterUnitTests;
+namespace CurrencyConverterUnitTests;
 
 public class YearlyCurrencyRatesTests
 {

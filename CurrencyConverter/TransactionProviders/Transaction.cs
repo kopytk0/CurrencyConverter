@@ -1,4 +1,4 @@
-﻿namespace BrokerConverter.TransactionProviders;
+﻿namespace CurrencyConverter.TransactionProviders;
 
 public struct Transaction
 {

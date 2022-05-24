@@ -1,4 +1,4 @@
-﻿namespace BrokerConverter;
+﻿namespace CurrencyConverter;
 
 internal class YearlyCurrencyRates
 {

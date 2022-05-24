@@ -1,4 +1,4 @@
-﻿namespace BrokerConverter;
+﻿namespace CurrencyConverter;
 
 /// <summary>
 ///     This class is used to convert currencies

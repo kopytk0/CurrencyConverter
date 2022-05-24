@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using BrokerConverter;
-using BrokerConverter.TransactionProviders;
+using CurrencyConverter;
+using CurrencyConverter.TransactionProviders;
 using Xunit;
 
-namespace BrokerConverterUnitTests;
+namespace CurrencyConverterUnitTests;
 
 public class IbkrFileTransactionProviderTests
 {
