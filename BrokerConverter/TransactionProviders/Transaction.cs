@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BrokerConverter
+namespace BrokerConverter.TransactionProviders
 {
     public struct Transaction
     {

@@ -6,16 +6,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 
-namespace BrokerConverter
+namespace BrokerConverter.CurrencyRateProviders
 {
-    public class NbpCurrencyProvider : ICurrencyRateProvider
+    /// <summary>
+    /// This class provides the functionality to get the currency rates from the Narodowy Bank Polski.
+    /// It is a singleton. Get the instance using the Instance field.
+    /// </summary>
+    public sealed class NbpCurrencyProvider : ICurrencyRateProvider
     {
         private readonly Dictionary<Currency, YearlyCurrencyRates> _rates; // source to PLN
 
-        public NbpCurrencyProvider()
+        private static readonly Lazy<NbpCurrencyProvider> _instance = new Lazy<NbpCurrencyProvider>(() => new NbpCurrencyProvider());
+        public static NbpCurrencyProvider Instance => _instance.Value;
+        
+        private NbpCurrencyProvider()
         {
             _rates = new Dictionary<Currency, YearlyCurrencyRates>();
         }
+        
 
         public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
         {

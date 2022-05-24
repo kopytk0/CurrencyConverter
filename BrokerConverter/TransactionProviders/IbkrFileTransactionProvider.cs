@@ -5,10 +5,10 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
-namespace BrokerConverter
+namespace BrokerConverter.TransactionProviders
 {
     /// <summary>
-    /// This class provides transactions from IBKR from Realized Summary in CSV format
+    /// This class provides transactions from IBKR from summary in CSV format
     /// </summary>
     public class IbkrFileTransactionProvider : IFileTransactionProvider
     {
@@ -27,6 +27,7 @@ namespace BrokerConverter
                 {
                     continue;
                 }
+                
                 if (csv.GetField<string>(1) == "Header")
                 {
                     csv.ReadHeader();
@@ -56,9 +57,9 @@ namespace BrokerConverter
         }
 
         /// <summary>
-        /// Returns transactions from Realized Summary CSV file
+        /// Returns transactions from summary CSV file
         /// </summary>
-        /// <param name="csvFilePath">Path of csv file</param>
+        /// <param name="csvFilePath">Path of the csv file</param>
         /// <returns></returns>
         public IEnumerable<Transaction> GetTransactions(string csvFilePath)
         {

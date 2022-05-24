@@ -8,7 +8,7 @@ namespace BrokerConverter
 {
     internal class YearlyCurrencyRates
     {
-        private Dictionary<ushort, decimal[]> _exchangeRatesInYear = new();
+        private readonly Dictionary<ushort, decimal[]> _exchangeRatesInYear = new();
         public Currency TargetCurrency { get; }
         public Currency SourceCurrency { get; }
 
