@@ -61,11 +61,6 @@ internal class YearlyCurrencyRates : ICurrencyRates
         return rates[date.DayOfYear - 1] != default;
     }
 
-    public bool ContainsYear(ushort year)
-    {
-        return _exchangeRatesInYear.ContainsKey(year);
-    }
-
     public void SetRates(ushort year, IEnumerable<KeyValuePair<DateTime, decimal>> rates)
     {
         var array = new decimal[year % 4 == 0 ? 366 : 365];
@@ -97,6 +92,11 @@ internal class YearlyCurrencyRates : ICurrencyRates
 
         FillFirstDaysOfYear(year);
         FillFirstDaysOfYear((ushort)(year + 1), lastKnownRate);
+    }
+
+    public bool ContainsYear(ushort year)
+    {
+        return _exchangeRatesInYear.ContainsKey(year);
     }
 
     private void FillFirstDaysOfYear(ushort year, decimal value = default)

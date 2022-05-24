@@ -1,10 +1,11 @@
 ﻿// ReSharper disable InconsistentNaming
+
 namespace CurrencyConverter;
 
 public enum Currency
 {
     //RUB = 0,
-    USD, 
+    USD,
     PLN,
     EUR,
     GBP,

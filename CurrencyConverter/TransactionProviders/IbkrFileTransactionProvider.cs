@@ -26,6 +26,7 @@ public class IbkrFileTransactionProvider : IFileTransactionProvider
                 {
                     csv.ReadHeader();
                 }
+
                 continue;
             }
 
@@ -51,7 +52,7 @@ public class IbkrFileTransactionProvider : IFileTransactionProvider
         return GetTransactions(reader);
     }
 
-    private bool IsTransactionRecord (CsvReader csv)
+    private bool IsTransactionRecord(CsvReader csv)
     {
         if (csv.GetField<string>(0) != "Trades")
         {

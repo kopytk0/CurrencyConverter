@@ -1,11 +1,10 @@
-﻿
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace CurrencyConverter.CurrencyRateProviders;
 
 /// <summary>
-/// This class provides the functionality to get the currency rates from the Narodowy Bank Polski.
-/// It is a singleton. Get the instance using the Instance field.
+///     This class provides the functionality to get the currency rates from the Narodowy Bank Polski.
+///     It is a singleton. Get the instance using the Instance field.
 /// </summary>
 public sealed class NbpCurrencyProvider : ICurrencyRateProvider
 {
@@ -79,7 +78,7 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
         {
             return false;
         }
-        
+
         if (targetCurrency == sourceCurrency)
         {
             rate = 1m;

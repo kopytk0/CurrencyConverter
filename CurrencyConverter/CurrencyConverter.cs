@@ -1,8 +1,7 @@
-﻿
-namespace CurrencyConverter;
+﻿namespace CurrencyConverter;
 
 /// <summary>
-/// This class is used to convert currencies
+///     This class is used to convert currencies
 /// </summary>
 public class CurrencyConverter
 {
@@ -13,7 +12,7 @@ public class CurrencyConverter
     }
 
     /// <summary>
-    /// Provider to get rates from
+    ///     Provider to get rates from
     /// </summary>
     public ICurrencyRateProvider RateProvider { get; set; }
 
@@ -28,7 +27,7 @@ public class CurrencyConverter
     }
 
     /// <summary>
-    /// Converts currencies
+    ///     Converts currencies
     /// </summary>
     public decimal Convert(Currency sourceCurrency, Currency targetCurrency, DateTime date, decimal amount)
     {
@@ -42,7 +41,7 @@ public class CurrencyConverter
     }
 
     /// <summary>
-    /// Tries to convert currencies
+    ///     Tries to convert currencies
     /// </summary>
     public bool TryConvert(Currency sourceCurrency, Currency targetCurrency, DateTime date, decimal amount,
         out decimal result)
