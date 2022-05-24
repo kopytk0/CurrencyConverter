@@ -1,13 +1,43 @@
 ﻿using System;
-using System.ComponentModel.Design;
 using BrokerConverter;
-using BrokerConverter.CurrencyRateProviders;
 using Xunit;
 
 namespace BrokerConverterUnitTests;
 
 public class CurrencyConverterTests
 {
+    [Fact]
+    public void ConvertCurrenciesTest()
+    {
+        var converter = new CurrencyConverter(new CurrencyRateProviderMock());
+
+        Assert.Equal(10m, converter.Convert(Currency.USD, Currency.EUR, new DateTime(9, 9, 10), 1m));
+        Assert.Equal(1m, converter.Convert(Currency.EUR, Currency.EUR, new DateTime(9, 9, 10), 1m));
+        Assert.Throws<Exception>(() => converter.Convert(Currency.EUR, Currency.USD, new DateTime(9, 9, 10), 1m));
+    }
+
+    [Fact]
+    public void TryConvertCurrenciesTest()
+    {
+        var converter = new CurrencyConverter(new CurrencyRateProviderMock());
+
+        Assert.True(converter.TryConvert(Currency.USD, Currency.EUR, new DateTime(9, 9, 10), 1, out var result));
+        Assert.Equal(10m, result);
+
+        Assert.False(converter.TryConvert(Currency.EUR, Currency.USD, new DateTime(9, 9, 10), 1, out result));
+        Assert.Equal(default, result);
+    }
+
+    [Fact]
+    public void CanHandleTest()
+    {
+        var converter = new CurrencyConverter(new CurrencyRateProviderMock());
+
+        Assert.True(converter.CanHandle(Currency.USD, Currency.EUR));
+        Assert.True(converter.CanHandle(Currency.USD, Currency.USD));
+        Assert.False(converter.CanHandle(Currency.EUR, Currency.USD));
+    }
+
     internal class CurrencyRateProviderMock : ICurrencyRateProvider
     {
         public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
@@ -43,37 +73,5 @@ public class CurrencyConverterTests
                 return false;
             }
         }
-    }
-
-    [Fact]
-    public void ConvertCurrenciesTest()
-    {
-        var converter = new CurrencyConverter(new CurrencyRateProviderMock());
-
-        Assert.Equal(10m, converter.Convert(Currency.USD, Currency.EUR, new DateTime(9, 9, 10), 1m));
-        Assert.Equal(1m, converter.Convert(Currency.EUR, Currency.EUR, new DateTime(9, 9, 10), 1m));
-        Assert.Throws<Exception>(() => converter.Convert(Currency.EUR, Currency.USD, new DateTime(9, 9, 10), 1m));
-    }
-
-    [Fact]
-    public void TryConvertCurrenciesTest()
-    {
-        var converter = new CurrencyConverter(new CurrencyRateProviderMock());
-
-        Assert.True(converter.TryConvert(Currency.USD, Currency.EUR, new DateTime(9, 9, 10), 1, out var result));
-        Assert.Equal(10m, result);
-
-        Assert.False(converter.TryConvert(Currency.EUR, Currency.USD, new DateTime(9, 9, 10), 1, out result));
-        Assert.Equal(default, result);
-    }
-
-    [Fact]
-    public void CanHandleTest()
-    {
-        var converter = new CurrencyConverter(new CurrencyRateProviderMock());
-
-        Assert.True(converter.CanHandle(Currency.USD, Currency.EUR));
-        Assert.True(converter.CanHandle(Currency.USD, Currency.USD));
-        Assert.False(converter.CanHandle(Currency.EUR, Currency.USD));
     }
 }

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BrokerConverter.TransactionProviders;
+﻿using BrokerConverter.TransactionProviders;
 
-namespace BrokerConverter
+namespace BrokerConverter;
+
+public interface IApiTransactionProvider
 {
-    public interface IApiTransactionProvider
-    {
-        IEnumerable<Transaction> GetTransactionsFromApi();
-    }
+    IEnumerable<Transaction> GetTransactionsFromApi();
 }
