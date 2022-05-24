@@ -23,13 +23,44 @@ namespace BrokerConverter
             RateProvider = rateProvider;
         }
 
+        public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
+        {
+            if (sourceCurrency == targetCurrency) return true;
+            return RateProvider.CanHandle(sourceCurrency, targetCurrency);
+        }
+
         /// <summary>
         /// Converts currencies
         /// </summary>
         public decimal Convert(Currency sourceCurrency, Currency targetCurrency, DateTime date, decimal amount)
         {
-            var rate = RateProvider.GetRate(date, sourceCurrency, targetCurrency);
+            if (sourceCurrency == targetCurrency)
+            {
+                return amount;
+            }
+
+            var rate = RateProvider.GetRate(sourceCurrency, targetCurrency, date);
             return amount * rate;
+        }
+
+        /// <summary>
+        /// Tries to convert currencies
+        /// </summary>
+        public bool TryConvert(Currency sourceCurrency, Currency targetCurrency, DateTime date, decimal amount, out decimal result)
+        {
+            if (sourceCurrency == targetCurrency)
+            {
+                result = amount;
+                return true;
+            }
+
+            if (!RateProvider.TryGetRate(sourceCurrency, targetCurrency, date, out var rate))
+            {
+                result = default;
+                return false;
+            }
+            result = amount * rate;
+            return true;
         }
     }
 }

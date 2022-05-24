@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
@@ -19,12 +20,12 @@ namespace BrokerConverter.CurrencyRateProviders
         private static readonly Lazy<NbpCurrencyProvider> _instance = new Lazy<NbpCurrencyProvider>(() => new NbpCurrencyProvider());
         public static NbpCurrencyProvider Instance => _instance.Value;
 
-        public NbpCurrencyProvider()
+        private NbpCurrencyProvider()
         {
             _rates = new Dictionary<Currency, YearlyCurrencyRates>();
         }
         
-
+        /// <inheritdoc/>
         public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
         {
             if (targetCurrency == sourceCurrency)
@@ -35,15 +36,15 @@ namespace BrokerConverter.CurrencyRateProviders
             return targetCurrency == Currency.PLN && sourceCurrency <= (Currency)33;
         }
 
-        public decimal GetRate(DateTime date, Currency sourceCurrency, Currency targetCurrency = Currency.PLN)
+        /// <inheritdoc/>
+        public decimal GetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date)
         {
-            if (targetCurrency != Currency.PLN)
+            if (targetCurrency == sourceCurrency) return 1m;
+            
+            if (!CanHandle(sourceCurrency, targetCurrency))
             {
                 throw new NotSupportedException("NBP api only supports conversion to PLN");
             }
-
-            if (sourceCurrency == targetCurrency)
-                return 1;
 
             _rates.TryGetValue(sourceCurrency, out var rates);
             if (rates == null)
@@ -68,11 +69,67 @@ namespace BrokerConverter.CurrencyRateProviders
             return rate;
         }
 
+        /// <summary>
+        /// Tries to get currency rate from the NBP api.
+        /// </summary>
+        /// <param name="targetCurrency">Should be Currency.PLN</param>
+        public bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate)
+        {
+            if (targetCurrency == sourceCurrency)
+            {
+                rate = 1m;
+                return true;
+            }
+
+            rate = default;
+
+            if (!CanHandle(sourceCurrency, targetCurrency))
+            {
+                return false;
+            }
+
+            _rates.TryGetValue(sourceCurrency, out var rates);
+            if (rates == null)
+            {
+                rates = new YearlyCurrencyRates(sourceCurrency, targetCurrency);
+                _rates.Add(sourceCurrency, rates);
+            }
+
+            if (!rates.ContainsYear((ushort)date.Year))
+            {
+                if(!TryGetNbpRates(date.Year, sourceCurrency)) return false;
+            }
+
+            rates.TryGetRate(date, out var multiplier);
+            rate = multiplier;
+
+            if (rate == default)
+            {
+                if (!TryGetNbpRates(date.Year - 1, sourceCurrency)) return false;
+                rate = rates.GetRate(date);
+            }
+
+            return true;
+        }
+
+        private bool TryGetNbpRates(int year, Currency sourceCurrency)
+        {
+            try
+            {
+                GetNbpRates(year, sourceCurrency);
+                return true;
+            }
+            catch (Exception) // failure should happen rarely so try catch is enough here
+            {
+                return false;
+            }
+        }
+
         private void GetNbpRates(int year, Currency sourceCurrency)
         {
             if (!_rates.TryGetValue(sourceCurrency, out var yearlyRates))
             {
-                throw new Exception("No yearly rates object for currency");
+                throw new Exception("No yearly rates object for currency"); // should never happen
             }
 
             var month = DateTime.Now.Year == year ? DateTime.Now.Month : 12;

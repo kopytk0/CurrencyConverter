@@ -45,7 +45,7 @@ namespace BrokerConverter
 
         public bool TryGetRate(DateTime date, out decimal rate)
         {
-            if (!_exchangeRatesInYear.TryGetValue((ushort)date.Year, out decimal[] rates))
+            if (!_exchangeRatesInYear.TryGetValue((ushort)date.Year, out decimal[]? rates))
             {
                 rate = default;
                 return false;
@@ -57,7 +57,7 @@ namespace BrokerConverter
 
         public bool ContainsRate(DateTime date)
         {
-            if (!_exchangeRatesInYear.TryGetValue((ushort)date.Year, out decimal[] rates))
+            if (!_exchangeRatesInYear.TryGetValue((ushort)date.Year, out decimal[]? rates))
             {
                 return false;
             }
