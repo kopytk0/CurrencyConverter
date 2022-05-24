@@ -18,8 +18,8 @@ namespace BrokerConverter.CurrencyRateProviders
 
         private static readonly Lazy<NbpCurrencyProvider> _instance = new Lazy<NbpCurrencyProvider>(() => new NbpCurrencyProvider());
         public static NbpCurrencyProvider Instance => _instance.Value;
-        
-        private NbpCurrencyProvider()
+
+        public NbpCurrencyProvider()
         {
             _rates = new Dictionary<Currency, YearlyCurrencyRates>();
         }

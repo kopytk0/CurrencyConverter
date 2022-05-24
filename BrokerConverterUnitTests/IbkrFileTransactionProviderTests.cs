@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BrokerConverter;
+using BrokerConverter.TransactionProviders;
 using Xunit;
 
 namespace BrokerConverterUnitTests

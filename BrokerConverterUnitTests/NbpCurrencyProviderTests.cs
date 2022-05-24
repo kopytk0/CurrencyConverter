@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BrokerConverter;
+using BrokerConverter.CurrencyRateProviders;
 using Xunit;
 
 namespace BrokerConverterUnitTests
