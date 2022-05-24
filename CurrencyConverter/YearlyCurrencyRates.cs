@@ -1,6 +1,6 @@
 ﻿namespace CurrencyConverter;
 
-internal class YearlyCurrencyRates
+internal class YearlyCurrencyRates : ICurrencyRates
 {
     private readonly Dictionary<ushort, decimal[]> _exchangeRatesInYear = new();
 
@@ -86,7 +86,14 @@ internal class YearlyCurrencyRates
             lastKnownRate = array[i];
         }
 
-        _exchangeRatesInYear.Add(year, array);
+        if (!_exchangeRatesInYear.ContainsKey(year))
+        {
+            _exchangeRatesInYear.Add(year, array);
+        }
+        else
+        {
+            _exchangeRatesInYear[year] = array;
+        }
 
         FillFirstDaysOfYear(year);
         FillFirstDaysOfYear((ushort)(year + 1), lastKnownRate);

@@ -23,6 +23,8 @@ public class CurrencyConverterTests
 
         Assert.True(converter.TryConvert(Currency.USD, Currency.EUR, new DateTime(9, 9, 10), 1, out var result));
         Assert.Equal(10m, result);
+        Assert.True(converter.TryConvert(Currency.USD, Currency.USD, new DateTime(9, 9, 10), 1, out result));
+        Assert.Equal(1m, result);
 
         Assert.False(converter.TryConvert(Currency.EUR, Currency.USD, new DateTime(9, 9, 10), 1, out result));
         Assert.Equal(default, result);

@@ -1,10 +1,11 @@
-﻿using System.Text.Json;
+﻿
+using System.Text.Json;
 
 namespace CurrencyConverter.CurrencyRateProviders;
 
 /// <summary>
-///     This class provides the functionality to get the currency rates from the Narodowy Bank Polski.
-///     It is a singleton. Get the instance using the Instance field.
+/// This class provides the functionality to get the currency rates from the Narodowy Bank Polski.
+/// It is a singleton. Get the instance using the Instance field.
 /// </summary>
 public sealed class NbpCurrencyProvider : ICurrencyRateProvider
 {
@@ -26,12 +27,17 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
             return true;
         }
 
-        return targetCurrency == Currency.PLN && sourceCurrency <= (Currency)33;
+        return targetCurrency == Currency.PLN && sourceCurrency <= (Currency)34;
     }
 
     /// <inheritdoc />
     public decimal GetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date)
     {
+        if (DateTime.Now.Date < date)
+        {
+            throw new ArgumentException("Date can't be in the future");
+        }
+
         if (targetCurrency == sourceCurrency) return 1m;
 
         if (!CanHandle(sourceCurrency, targetCurrency))
@@ -68,13 +74,17 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
     /// <param name="targetCurrency">Should be Currency.PLN</param>
     public bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate)
     {
+        rate = default;
+        if (DateTime.Now.Date < date)
+        {
+            return false;
+        }
+        
         if (targetCurrency == sourceCurrency)
         {
             rate = 1m;
             return true;
         }
-
-        rate = default;
 
         if (!CanHandle(sourceCurrency, targetCurrency))
         {
@@ -128,7 +138,7 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
         var month = DateTime.Now.Year == year ? DateTime.Now.Month : 12;
         var day = DateTime.Now.Year == year ? DateTime.Now.Day - 1 : 31;
         var source =
-            $"https://api.nbp.pl/api/exchangerates/rates/A/{sourceCurrency.ToString().ToLower()}/{year}-01-01/{year}-{month.ToString("D2")}-{day.ToString("D2")}/?format=json";
+            $"https://api.nbp.pl/api/exchangerates/rates/A/{sourceCurrency.ToString().ToLower()}/{year}-01-01/{year}-{month:D2}-{day:D2}/?format=json";
 
         var client = new HttpClient();
         var response = client.GetAsync(source).Result;

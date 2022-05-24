@@ -5,12 +5,26 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<Authors>jakubqwe</Authors>
+		<EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
+		<Copyright>Jakub Bracha</Copyright>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>currency converter;currency;tax;money</PackageTags>
+		<Version>1.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>CurrencyConverterUnitTests</_Parameter1>
 		</AssemblyAttribute>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 	<ItemGroup>
