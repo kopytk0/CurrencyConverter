@@ -20,24 +20,12 @@ public class IbkrFileTransactionProvider : IFileTransactionProvider
 
         while (csv.Read())
         {
-            if (csv.GetField<string>(0) != "Trades")
+            if (!IsTransactionRecord(csv))
             {
-                continue;
-            }
-
-            if (csv.GetField<string>(1) == "Header")
-            {
-                csv.ReadHeader();
-                continue;
-            }
-
-            if (csv.GetField<string>("Header") != "Data")
-            {
-                continue;
-            }
-
-            if (!csv.HeaderRecord.Contains("Realized P/L"))
-            {
+                if (csv.GetField<string>(1) == "Header")
+                {
+                    csv.ReadHeader();
+                }
                 continue;
             }
 
@@ -61,5 +49,20 @@ public class IbkrFileTransactionProvider : IFileTransactionProvider
     {
         using var reader = new StreamReader(csvFilePath);
         return GetTransactions(reader);
+    }
+
+    private bool IsTransactionRecord (CsvReader csv)
+    {
+        if (csv.GetField<string>(0) != "Trades")
+        {
+            return false;
+        }
+
+        if (csv.GetField<string>("Header") != "Data")
+        {
+            return false;
+        }
+
+        return csv.HeaderRecord.Contains("Realized P/L");
     }
 }

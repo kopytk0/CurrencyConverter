@@ -27,7 +27,7 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
             return true;
         }
 
-        return targetCurrency == Currency.PLN && sourceCurrency <= (Currency)34;
+        return targetCurrency == Currency.PLN && sourceCurrency <= Currency.XDR; // All currencies supported by NBP
     }
 
     /// <inheritdoc />

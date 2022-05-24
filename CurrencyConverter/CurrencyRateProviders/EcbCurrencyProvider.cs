@@ -10,9 +10,9 @@ using CsvHelper.Configuration;
 
 namespace CurrencyConverter.CurrencyRateProviders
 {
-    public class EcbCurrencyProvider : ICurrencyRateProvider
+    public sealed class EcbCurrencyProvider : ICurrencyRateProvider
     {
-        private readonly Dictionary<Currency, YearlyCurrencyRates> _rates;
+        private readonly Dictionary<Currency, YearlyCurrencyRates> _rates; // TODO: change singleton into resolver
 
         private static readonly Lazy<EcbCurrencyProvider> _instance = new Lazy<EcbCurrencyProvider>(() => new EcbCurrencyProvider());
         public static EcbCurrencyProvider Instance => _instance.Value;
@@ -29,15 +29,15 @@ namespace CurrencyConverter.CurrencyRateProviders
                 return true;
 
             return targetCurrency == Currency.EUR &&
-                   sourceCurrency is <= (Currency)33 and not Currency.UAH and not Currency.CLP;
+                   sourceCurrency is <= Currency.MXN and not Currency.UAH and not Currency.CLP; // All currencies supported by ECB
         }
-        
+
         /// <inheritdoc/>
         public decimal GetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date)
         {
             if (DateTime.Now.Date < date)
             {
-                throw new ArgumentException("Date can't be in the future");
+                throw new ArgumentException("Date cannot be in the future");
             }
 
             if (sourceCurrency == targetCurrency)
@@ -47,29 +47,44 @@ namespace CurrencyConverter.CurrencyRateProviders
 
             if (!CanHandle(sourceCurrency, targetCurrency))
             {
-                throw new NotSupportedException("Conversion not supported by ECB");
+                throw new NotSupportedException("Conversion not supported by ECB"); // TODO: Create CurrencyConversionNotSupportedException
             }
-
 
             if (!_rates.TryGetValue(sourceCurrency, out var yearlyRates))
             {
-                yearlyRates = new YearlyCurrencyRates(sourceCurrency, targetCurrency);
+                yearlyRates = new YearlyCurrencyRates(sourceCurrency, Currency.EUR);
                 _rates.Add(sourceCurrency, yearlyRates);
             }
 
-            if (!yearlyRates.TryGetRate(date, out var rate))
+            if (yearlyRates.TryGetRate(date, out var rate))
             {
-                if(!TryGetEcbRates(date.Year, sourceCurrency))
-                    throw new Exception($"Could not get ECB rates for year {date.Year}");
-            }
-            if (rate == default)
-            {
-                if(!TryGetEcbRates(date.Year - 1, sourceCurrency))
-                    throw new Exception($"Could not get ECB rates for year {date.Year - 1}");
-                rate = yearlyRates.GetRate(date);
+                return rate;
             }
 
+            EnsureRateIsCached(sourceCurrency, date, yearlyRates);
+
+            rate = yearlyRates.GetRate(date);
+           
+
             return rate;
+        }
+
+        private void EnsureRateIsCached(Currency sourceCurrency, DateTime date, YearlyCurrencyRates yearlyRates)
+        {
+            if (!TryGetEcbRates(date.Year, sourceCurrency))
+            {
+                throw new Exception($"Could not get ECB rates for year {date.Year}");
+            }
+
+            if (yearlyRates.ContainsRate(date))
+            {
+                return;
+            }
+
+            if (!TryGetEcbRates(date.Year - 1, sourceCurrency))
+            {
+                throw new Exception($"Could not get ECB rates for year {date.Year - 1}");
+            }
         }
 
         /// <inheritdoc/>
@@ -104,20 +119,20 @@ namespace CurrencyConverter.CurrencyRateProviders
                 {
                     return false;
                 }
+                if (rate == default)
+                {
+                    if (!TryGetEcbRates(date.Year - 1, sourceCurrency))
+                    {
+                        return false;
+                    }
+                    if (!yearlyRates.TryGetRate(date, out rate))
+                    {
+                        return false;
+                    }
+                }
             }
 
             yearlyRates.TryGetRate(date, out rate);
-            if (rate == default)
-            {
-                if (!TryGetEcbRates(date.Year - 1, sourceCurrency))
-                {
-                    return false;
-                }
-                if (!yearlyRates.TryGetRate(date, out rate))
-                {
-                    return false;
-                }
-            }
 
             return true;
         }
@@ -128,25 +143,37 @@ namespace CurrencyConverter.CurrencyRateProviders
                 throw new InvalidDataException("Rates not found"); // this should never happen
             }
 
-            var query = $"https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.{sourceCurrency}.EUR.SP00.A?startPeriod={year}-01-01&endPeriod={year}-12-31&format=csvdata";
             var client = new HttpClient();
-
-            var response = client.GetAsync(query).Result;
+            var response = client.GetAsync(PrepareQuery(sourceCurrency, Currency.EUR, year)).Result;
             if (!response.IsSuccessStatusCode)
             {
                 return false;
             }
 
-            using var stream = response.Content.ReadAsStream();
-            using var csv = new CsvReader(new StreamReader(stream), CultureInfo.InvariantCulture);
-            var records = csv.GetRecords<CsvTransactionData>()
-                .Select((x) => new KeyValuePair<DateTime,decimal>(x.TIME_PERIOD, x.OBS_VALUE));
-
-            yearlyRates.SetRates((ushort)year, records);
+            yearlyRates.SetRates((ushort)year, ParseRecords(response.Content));
             return true;
         }
 
-        internal struct CsvTransactionData
+        private IEnumerable<KeyValuePair<DateTime, decimal>> ParseRecords(HttpContent content)
+        {
+            using (var reader = new StreamReader(content.ReadAsStream()))
+            {
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                    return csv.GetRecords<CsvConversionData>()
+                        .Select((x) => new KeyValuePair<DateTime, decimal>(x.TIME_PERIOD, x.OBS_VALUE));
+                }
+            }
+            
+        }
+
+
+        private string PrepareQuery(Currency sourceCurrency, Currency targetCurrency, int year)
+        {
+            return $"https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.{sourceCurrency}.EUR.SP00.A?startPeriod={year}-01-01&endPeriod={year}-12-31&format=csvdata";
+        }
+
+        internal struct CsvConversionData
         {
             public DateTime TIME_PERIOD { get; set; }
             public decimal OBS_VALUE { get; set; }

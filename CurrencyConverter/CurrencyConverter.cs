@@ -19,7 +19,11 @@ public class CurrencyConverter
 
     public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
     {
-        if (sourceCurrency == targetCurrency) return true;
+        if (sourceCurrency == targetCurrency)
+        {
+            return true;
+        }
+
         return RateProvider.CanHandle(sourceCurrency, targetCurrency);
     }
 
