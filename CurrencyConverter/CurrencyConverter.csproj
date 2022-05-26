@@ -19,7 +19,6 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageLicenseUrl>https://github.com/jakubqwe/CurrencyConverter/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
