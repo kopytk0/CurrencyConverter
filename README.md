@@ -12,7 +12,7 @@ A library to convert currencies and get transaction history from brokers' APIs
 - `NbpCurrencyProvider`
   - Provides currency conversion rates from Polish central bank
   - Source: http://api.nbp.pl/
-- `EbcCurrencyProvider`
+- `EcbCurrencyProvider`
   - Provides currency conversion rates from European central bank
   - Source: https://sdw-wsrest.ecb.europa.eu/
   
