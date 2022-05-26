@@ -1,6 +1,6 @@
 # Currency Converter
 
-A framework to get official currency conversion rates, transaction history from brokers' APIs and automate currency conversion of transactions
+A framework to convert currencies and transaction history from brokers' APIs 
 
 ## `CurrencyConverter`
 
@@ -10,9 +10,11 @@ A framework to get official currency conversion rates, transaction history from 
 
 - `NbpCurrencyProvider`
   - Provides currency conversion rates from Polish central bank
+  - Source: http://api.nbp.pl/
 - `EbcCurrencyProvider`
   - Provides currency conversion rates from European central bank
-
+  - Source: https://sdw-wsrest.ecb.europa.eu/
+  
 ## Transaction providers:
 
 - `IbkrFileTransactionProvider`
