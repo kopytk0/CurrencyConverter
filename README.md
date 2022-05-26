@@ -1,6 +1,6 @@
 # Currency Converter
 
-A framework to convert currencies and transaction history from brokers' APIs 
+A library to convert currencies and get transaction history from brokers' APIs 
 
 ## `CurrencyConverter`
 
