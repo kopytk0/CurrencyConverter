@@ -1,6 +1,6 @@
 ﻿namespace CurrencyConverter;
 
-public interface ICurrencyRateProvider
+public interface ICurrencyRateProvider // TODO: GetRate for latest data
 {
     /// <summary>
     ///     Checks if conversion can be handled
@@ -8,7 +8,7 @@ public interface ICurrencyRateProvider
     bool CanHandle(Currency sourceCurrency, Currency targetCurrency);
 
     /// <summary>
-    ///     Gets the conversion rate
+    ///     Gets the conversion rate for given date
     /// </summary>
     decimal GetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date);
 
@@ -16,4 +16,6 @@ public interface ICurrencyRateProvider
     ///     Tries to get the conversion rate
     /// </summary>
     bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate);
+
+    void ClearCache();
 }

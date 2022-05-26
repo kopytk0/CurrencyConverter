@@ -71,7 +71,6 @@ public class EcbCurrencyProvider : ICurrencyRateProvider
                 return false;
             }
             rate = eurTargetRate / eurSrcRate;
-
             return true;
         }
 
@@ -180,6 +179,11 @@ public class EcbCurrencyProvider : ICurrencyRateProvider
     {
         return
             $"https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.{sourceCurrency}.EUR.SP00.A?startPeriod={year}-01-01&endPeriod={year}-12-31&format=csvdata";
+    }
+
+    public void ClearCache()
+    {
+        _rates.Clear();
     }
 
     internal struct CsvConversionData

@@ -69,18 +69,13 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
     public bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate)
     {
         rate = default;
-        if (DateTime.Now.Date < date)
-        {
-            return false;
-        }
-
         if (targetCurrency == sourceCurrency)
         {
             rate = 1m;
             return true;
         }
 
-        if (!CanHandle(sourceCurrency, targetCurrency))
+        if (!CanHandle(sourceCurrency, targetCurrency) || DateTime.Now.Date < date)
         {
             return false;
         }
@@ -119,6 +114,11 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
         }
 
         return true;
+    }
+
+    public void ClearCache()
+    {
+        _rates.Clear();
     }
 
     private bool TryGetNbpRates(int year, Currency sourceCurrency)

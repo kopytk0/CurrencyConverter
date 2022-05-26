@@ -75,5 +75,10 @@ public class CurrencyConverterTests
                 return false;
             }
         }
+
+        public void ClearCache()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
