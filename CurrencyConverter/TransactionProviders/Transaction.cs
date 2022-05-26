@@ -1,8 +1,12 @@
-﻿namespace CurrencyConverter.TransactionProviders;
+﻿using System;
 
-public struct Transaction
+namespace CurrencyConverter.TransactionProviders
 {
-    public Currency BaseCurrency;
-    public decimal Income;
-    public DateTime Date;
+
+    public struct Transaction
+    {
+        public Currency BaseCurrency;
+        public decimal Income;
+        public DateTime Date;
+    }
 }

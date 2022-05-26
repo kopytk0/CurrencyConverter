@@ -1,8 +1,12 @@
-﻿using CurrencyConverter.TransactionProviders;
+﻿using System.Collections.Generic;
+using System.IO;
+using CurrencyConverter.TransactionProviders;
 
-namespace CurrencyConverter;
-
-public interface IFileTransactionProvider
+namespace CurrencyConverter
 {
-    IEnumerable<Transaction> GetTransactions(TextReader reader);
+
+    public interface IFileTransactionProvider
+    {
+        IEnumerable<Transaction> GetTransactions(TextReader reader);
+    }
 }
