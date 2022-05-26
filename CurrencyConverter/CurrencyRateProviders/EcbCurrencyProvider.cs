@@ -1,19 +1,12 @@
 ﻿using System.Globalization;
+using System.Reflection.Metadata.Ecma335;
 using CsvHelper;
 
 namespace CurrencyConverter.CurrencyRateProviders;
 
-public sealed class EcbCurrencyProvider : ICurrencyRateProvider
+public class EcbCurrencyProvider : ICurrencyRateProvider
 {
-    private static readonly Lazy<EcbCurrencyProvider> _instance = new(() => new EcbCurrencyProvider());
-    private readonly Dictionary<Currency, YearlyCurrencyRates> _rates; // TODO: change singleton into resolver
-
-    private EcbCurrencyProvider()
-    {
-        _rates = new Dictionary<Currency, YearlyCurrencyRates>();
-    }
-
-    public static EcbCurrencyProvider Instance => _instance.Value;
+    private static readonly Dictionary<Currency, YearlyCurrencyRates> _rates = new(); // Euro to Currency
 
     /// <inheritdoc />
     public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
@@ -21,9 +14,8 @@ public sealed class EcbCurrencyProvider : ICurrencyRateProvider
         if (sourceCurrency == targetCurrency)
             return true;
 
-        return targetCurrency == Currency.EUR &&
-               sourceCurrency is <= Currency.MXN and not Currency.UAH
-                   and not Currency.CLP; // All currencies supported by ECB
+        return targetCurrency is <= Currency.MXN and not Currency.UAH and not Currency.CLP &&
+               sourceCurrency is <= Currency.MXN and not Currency.UAH and not Currency.CLP; // All currencies supported by ECB
     }
 
     /// <inheritdoc />
@@ -39,110 +31,129 @@ public sealed class EcbCurrencyProvider : ICurrencyRateProvider
             return 1m;
         }
 
+        if (sourceCurrency != Currency.EUR)
+        {
+            return GetRate(Currency.EUR, targetCurrency, date) / GetRate(Currency.EUR, sourceCurrency, date);
+        }
+
         if (!CanHandle(sourceCurrency, targetCurrency))
         {
             throw
                 new NotSupportedException("Conversion not supported by ECB"); // TODO: Create CurrencyConversionNotSupportedException
         }
 
-        if (!_rates.TryGetValue(sourceCurrency, out var yearlyRates))
+        if (!_rates.TryGetValue(targetCurrency, out var yearlyRates))
         {
-            yearlyRates = new YearlyCurrencyRates(sourceCurrency, Currency.EUR);
-            _rates.Add(sourceCurrency, yearlyRates);
+            yearlyRates = new YearlyCurrencyRates(Currency.EUR, targetCurrency);
+            _rates.Add(targetCurrency, yearlyRates);
         }
 
-        if (yearlyRates.TryGetRate(date, out var rate))
-        {
-            return rate;
-        }
+        EnsureRateIsCached(targetCurrency, date, yearlyRates);
 
-        EnsureRateIsCached(sourceCurrency, date, yearlyRates);
-
-        rate = yearlyRates.GetRate(date);
-
-
-        return rate;
+        return yearlyRates.GetRate(date);
     }
 
     /// <inheritdoc />
     public bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate)
     {
         rate = default;
-        if (DateTime.Now.Date < date)
-        {
-            return false;
-        }
-
         if (sourceCurrency == targetCurrency)
         {
             rate = 1m;
             return true;
         }
 
-        if (!CanHandle(sourceCurrency, targetCurrency))
+        if (sourceCurrency != Currency.EUR)
+        {
+            if (!TryGetRate(Currency.EUR, sourceCurrency, date, out var eurSrcRate) ||
+                !TryGetRate(Currency.EUR, targetCurrency, date, out var eurTargetRate))
+            {
+                return false;
+            }
+            rate = eurTargetRate / eurSrcRate;
+
+            return true;
+        }
+
+        if (!CanHandle(sourceCurrency, targetCurrency) || DateTime.Now.Date < date)
         {
             return false;
         }
 
-        if (!_rates.TryGetValue(sourceCurrency, out var yearlyRates))
+        if (!_rates.TryGetValue(targetCurrency, out var yearlyRates))
         {
-            yearlyRates = new YearlyCurrencyRates(sourceCurrency, targetCurrency);
-            _rates.Add(sourceCurrency, yearlyRates);
+            yearlyRates = new YearlyCurrencyRates(Currency.EUR, targetCurrency);
+            _rates.Add(targetCurrency, yearlyRates);
         }
 
-        if (!yearlyRates.ContainsYear((ushort)date.Year))
+        if (!TryCacheRate(targetCurrency, date, yearlyRates))
         {
-            if (!TryGetEcbRates(date.Year, sourceCurrency))
+            return false;
+        }
+        return yearlyRates.TryGetRate(date, out rate);
+    }
+
+    private bool TryCacheRate(Currency targetCurrency, DateTime date, YearlyCurrencyRates yearlyRates)
+    {
+        if (targetCurrency == Currency.EUR) return true;
+
+        if (!yearlyRates.ContainsRate(date))
+        {
+            if (!TryGetEcbRates(date.Year, targetCurrency))
             {
                 return false;
             }
 
-            if (rate == default)
+            if (yearlyRates.ContainsRate(date))
             {
-                if (!TryGetEcbRates(date.Year - 1, sourceCurrency))
-                {
-                    return false;
-                }
-
-                if (!yearlyRates.TryGetRate(date, out rate))
-                {
-                    return false;
-                }
+                return true;
+            }
+            
+            if (!TryGetEcbRates(date.Year - 1, targetCurrency))
+            {
+                return false;
             }
         }
-
-        yearlyRates.TryGetRate(date, out rate);
 
         return true;
     }
 
-    private void EnsureRateIsCached(Currency sourceCurrency, DateTime date, YearlyCurrencyRates yearlyRates)
+    private void EnsureRateIsCached(Currency targetCurrency, DateTime rateDate, YearlyCurrencyRates yearlyRates)
     {
-        if (!TryGetEcbRates(date.Year, sourceCurrency))
-        {
-            throw new Exception($"Could not get ECB rates for year {date.Year}");
-        }
+        if (targetCurrency == Currency.EUR) return;
 
-        if (yearlyRates.ContainsRate(date))
+        if (EnsureYearIsCached(targetCurrency, rateDate, rateDate.Year, yearlyRates))
         {
             return;
         }
 
-        if (!TryGetEcbRates(date.Year - 1, sourceCurrency))
-        {
-            throw new Exception($"Could not get ECB rates for year {date.Year - 1}");
-        }
+        EnsureYearIsCached(targetCurrency, rateDate, rateDate.Year - 1, yearlyRates);
     }
 
-    private bool TryGetEcbRates(int year, Currency sourceCurrency)
+    private bool EnsureYearIsCached(Currency sourceCurrency, DateTime rateDate, int year, YearlyCurrencyRates yearlyRates)
     {
-        if (!_rates.TryGetValue(sourceCurrency, out var yearlyRates))
+        if (yearlyRates.ContainsRate(rateDate))
+        {
+            return true;
+        }
+
+        if (!TryGetEcbRates(year, sourceCurrency))
+        {
+            throw new Exception($"Could not get ECB rates for year {year}");
+        }
+
+        return false;
+    }
+
+    private bool TryGetEcbRates(int year, Currency targetCurrency)
+    {
+        if (!_rates.TryGetValue(targetCurrency, out var yearlyRates))
         {
             throw new InvalidDataException("Rates not found"); // this should never happen
         }
 
         var client = new HttpClient();
-        var response = client.GetAsync(PrepareQuery(sourceCurrency, Currency.EUR, year)).Result;
+        var response = client.GetAsync(PrepareQuery(targetCurrency, Currency.EUR, year)).Result;
         if (!response.IsSuccessStatusCode)
         {
             return false;
@@ -159,7 +170,7 @@ public sealed class EcbCurrencyProvider : ICurrencyRateProvider
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 return csv.GetRecords<CsvConversionData>()
-                    .Select(x => new KeyValuePair<DateTime, decimal>(x.TIME_PERIOD, x.OBS_VALUE));
+                    .Select(x => new KeyValuePair<DateTime, decimal>(x.TIME_PERIOD, x.OBS_VALUE)).ToList();
             }
         }
     }

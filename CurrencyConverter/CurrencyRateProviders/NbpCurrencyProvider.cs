@@ -2,21 +2,9 @@
 
 namespace CurrencyConverter.CurrencyRateProviders;
 
-/// <summary>
-///     This class provides the functionality to get the currency rates from the Narodowy Bank Polski.
-///     It is a singleton. Get the instance using the Instance field.
-/// </summary>
 public sealed class NbpCurrencyProvider : ICurrencyRateProvider
 {
-    private static readonly Lazy<NbpCurrencyProvider> _instance = new(() => new NbpCurrencyProvider());
-    private readonly Dictionary<Currency, YearlyCurrencyRates> _rates; // source to PLN
-
-    private NbpCurrencyProvider()
-    {
-        _rates = new Dictionary<Currency, YearlyCurrencyRates>();
-    }
-
-    public static NbpCurrencyProvider Instance => _instance.Value;
+    private static readonly Dictionary<Currency, YearlyCurrencyRates> _rates = new(); // source to PLN
 
     /// <inheritdoc />
     public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
@@ -26,7 +14,7 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
             return true;
         }
 
-        return targetCurrency == Currency.PLN && sourceCurrency <= Currency.XDR; // All currencies supported by NBP
+        return targetCurrency <= Currency.XDR && sourceCurrency <= Currency.XDR; // All currencies supported by NBP
     }
 
     /// <inheritdoc />
@@ -37,11 +25,19 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
             throw new ArgumentException("Date can't be in the future");
         }
 
-        if (targetCurrency == sourceCurrency) return 1m;
+        if (targetCurrency == sourceCurrency)
+        {
+            return 1m;
+        }
 
         if (!CanHandle(sourceCurrency, targetCurrency))
         {
-            throw new NotSupportedException("NBP api only supports conversion to PLN");
+            throw new NotSupportedException("Pair not supported by NBP");
+        }
+
+        if (targetCurrency != Currency.PLN)
+        {
+            return GetRate(sourceCurrency, Currency.PLN, date) / GetRate(targetCurrency, Currency.PLN, date);
         }
 
         _rates.TryGetValue(sourceCurrency, out var rates);
@@ -70,7 +66,6 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
     /// <summary>
     ///     Tries to get currency rate from the NBP api.
     /// </summary>
-    /// <param name="targetCurrency">Should be Currency.PLN</param>
     public bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate)
     {
         rate = default;
@@ -88,6 +83,18 @@ public sealed class NbpCurrencyProvider : ICurrencyRateProvider
         if (!CanHandle(sourceCurrency, targetCurrency))
         {
             return false;
+        }
+
+        if (targetCurrency != Currency.PLN)
+        {
+            if (!TryGetRate(sourceCurrency, Currency.PLN, date, out var srcPlnRate) ||
+                !TryGetRate(targetCurrency, Currency.PLN, date, out var targetPlnRate))
+            {
+                return false;
+            }
+
+            rate = srcPlnRate / targetPlnRate;
+            return true;
         }
 
         _rates.TryGetValue(sourceCurrency, out var rates);

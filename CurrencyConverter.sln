@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurrencyConverter", "Curren
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurrencyConverterUnitTests", "CurrencyConverterUnitTests\CurrencyConverterUnitTests.csproj", "{C3342BA2-D070-4D46-BD66-6138D2C01411}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backupcode", "backupcode", "{80CFED82-60BF-4A57-9382-996AA2DCF329}"
+	ProjectSection(SolutionItems) = preProject
+		CurrencyConverter\CurrencyRateProviders\CurrencyProviderFactory.cs = CurrencyConverter\CurrencyRateProviders\CurrencyProviderFactory.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
