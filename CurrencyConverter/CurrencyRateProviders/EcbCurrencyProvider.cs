@@ -8,10 +8,10 @@ using CsvHelper;
 
 namespace CurrencyConverter.CurrencyRateProviders
 {
-
     public class EcbCurrencyProvider : ICurrencyRateProvider
     {
-        private static readonly Dictionary<Currency, YearlyCurrencyRates> _rates = new Dictionary<Currency, YearlyCurrencyRates>(); // Euro to Currency
+        private static readonly Dictionary<Currency, YearlyCurrencyRates> _rates =
+            new Dictionary<Currency, YearlyCurrencyRates>(); // Euro to Currency
 
         /// <inheritdoc />
         public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
@@ -19,12 +19,8 @@ namespace CurrencyConverter.CurrencyRateProviders
             if (sourceCurrency == targetCurrency)
                 return true;
 
-            return IsCurrencySupported(targetCurrency) && IsCurrencySupported(sourceCurrency); // All currencies supported by ECB
-        }
-
-        private static bool IsCurrencySupported(Currency targetCurrency)
-        {
-            return targetCurrency <= Currency.MXN && targetCurrency != Currency.UAH && targetCurrency != Currency.CLP;
+            return IsCurrencySupported(targetCurrency) &&
+                   IsCurrencySupported(sourceCurrency); // All currencies supported by ECB
         }
 
         /// <inheritdoc />
@@ -102,6 +98,16 @@ namespace CurrencyConverter.CurrencyRateProviders
             }
 
             return yearlyRates.TryGetRate(date, out rate);
+        }
+
+        public void ClearCache()
+        {
+            _rates.Clear();
+        }
+
+        private static bool IsCurrencySupported(Currency targetCurrency)
+        {
+            return targetCurrency <= Currency.MXN && targetCurrency != Currency.UAH && targetCurrency != Currency.CLP;
         }
 
         private bool TryCacheRate(Currency targetCurrency, DateTime date, YearlyCurrencyRates yearlyRates)
@@ -192,11 +198,6 @@ namespace CurrencyConverter.CurrencyRateProviders
         {
             return
                 $"https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.{sourceCurrency}.EUR.SP00.A?startPeriod={year}-01-01&endPeriod={year}-12-31&format=csvdata";
-        }
-
-        public void ClearCache()
-        {
-            _rates.Clear();
         }
 
         internal struct CsvConversionData

@@ -35,8 +35,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="LICENSE" Pack="true" PackagePath=""/>
-  </ItemGroup>  
+    <None Include="LICENSE" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="27.2.1" />

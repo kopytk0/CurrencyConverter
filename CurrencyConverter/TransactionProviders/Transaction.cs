@@ -2,7 +2,6 @@
 
 namespace CurrencyConverter.TransactionProviders
 {
-
     public struct Transaction
     {
         public Currency BaseCurrency;

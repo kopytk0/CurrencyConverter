@@ -1,14 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System;
 using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
 
 namespace CurrencyConverter.TransactionProviders
 {
-
     /// <summary>
     ///     This class provides transactions from IBKR from summary in CSV format
     /// </summary>
@@ -23,7 +22,6 @@ namespace CurrencyConverter.TransactionProviders
         {
             using (var csv = new CsvReader(csvTextReader, new CsvConfiguration(CultureInfo.InvariantCulture)))
             {
-
                 while (csv.Read())
                 {
                     if (!IsTransactionRecord(csv))

@@ -1,6 +1,7 @@
 ﻿// ReSharper disable InconsistentNaming
 
 // ReSharper disable UnusedMember.Global
+
 namespace CurrencyConverter
 {
     public enum Currency

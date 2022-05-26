@@ -1,15 +1,15 @@
-﻿using System.Text.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace CurrencyConverter.CurrencyRateProviders
 {
-
     public sealed class NbpCurrencyProvider : ICurrencyRateProvider
     {
-        private static readonly Dictionary<Currency, YearlyCurrencyRates> _rates = new Dictionary<Currency, YearlyCurrencyRates>(); // source to PLN
+        private static readonly Dictionary<Currency, YearlyCurrencyRates> _rates =
+            new Dictionary<Currency, YearlyCurrencyRates>(); // source to PLN
 
         /// <inheritdoc />
         public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
@@ -158,7 +158,8 @@ namespace CurrencyConverter.CurrencyRateProviders
                 throw new Exception("NbpCurrencyProvider: failed to get rates");
             }
 
-            using (var content = response.Content.ReadAsStreamAsync().Result){
+            using (var content = response.Content.ReadAsStreamAsync().Result)
+            {
                 var json = JsonDocument.Parse(content);
                 var jsonRates = json.RootElement.GetProperty("rates");
 
