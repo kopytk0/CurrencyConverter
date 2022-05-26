@@ -9,9 +9,9 @@ A framework to get official currency conversion rates, transaction history from 
 ## Rates providers:
 
 - `NbpCurrencyProvider`
-  - Provides currency conversion rates from Polish central bank to `Currency.PLN`
+  - Provides currency conversion rates from Polish central bank
 - `EbcCurrencyProvider`
-  - Provides currency conversion rates from European central bank to `Currency.EUR`
+  - Provides currency conversion rates from European central bank
 
 ## Transaction providers:
 
