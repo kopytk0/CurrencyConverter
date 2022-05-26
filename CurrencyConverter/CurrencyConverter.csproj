@@ -17,7 +17,6 @@
     <PackageProjectUrl>https://github.com/jakubqwe/CurrencyConverter</PackageProjectUrl>
     <Description>A library for currency conversion</Description>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
