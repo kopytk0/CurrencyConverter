@@ -1,77 +1,74 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System;
 using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
 
-namespace CurrencyConverter.TransactionProviders
+namespace CurrencyConverter.TransactionProviders;
+
+/// <summary>
+///     This class provides transactions from IBKR from summary in CSV format
+/// </summary>
+public class IbkrFileTransactionProvider : IFileTransactionProvider
 {
-
     /// <summary>
-    ///     This class provides transactions from IBKR from summary in CSV format
+    ///     Returns transactions from Realized Summary CSV
     /// </summary>
-    public class IbkrFileTransactionProvider : IFileTransactionProvider
+    /// <param name="csvTextReader">Text reader of csv</param>
+    /// <returns></returns>
+    public IEnumerable<Transaction> GetTransactions(TextReader csvTextReader)
     {
-        /// <summary>
-        ///     Returns transactions from Realized Summary CSV
-        /// </summary>
-        /// <param name="csvTextReader">Text reader of csv</param>
-        /// <returns></returns>
-        public IEnumerable<Transaction> GetTransactions(TextReader csvTextReader)
+        using (var csv = new CsvReader(csvTextReader, new CsvConfiguration(CultureInfo.InvariantCulture)))
         {
-            using (var csv = new CsvReader(csvTextReader, new CsvConfiguration(CultureInfo.InvariantCulture)))
+            while (csv.Read())
             {
-
-                while (csv.Read())
+                if (!IsTransactionRecord(csv))
                 {
-                    if (!IsTransactionRecord(csv))
+                    if (csv.GetField<string>(1) == "Header")
                     {
-                        if (csv.GetField<string>(1) == "Header")
-                        {
-                            csv.ReadHeader();
-                        }
-
-                        continue;
+                        csv.ReadHeader();
                     }
 
-                    var transaction = new Transaction
-                    {
-                        BaseCurrency = csv.GetField<Currency>("Currency"),
-                        Income = csv.GetField<decimal>("Realized P/L"),
-                        Date = csv.GetField<DateTime>("Date/Time")
-                    };
-
-                    yield return transaction;
+                    continue;
                 }
+
+                var transaction = new Transaction
+                {
+                    BaseCurrency = csv.GetField<Currency>("Currency"),
+                    Income = csv.GetField<decimal>("Realized P/L"),
+                    Date = csv.GetField<DateTime>("Date/Time")
+                };
+
+                yield return transaction;
             }
         }
+    }
 
-        /// <summary>
-        ///     Returns transactions from summary CSV file
-        /// </summary>
-        /// <param name="csvFilePath">Path of the csv file</param>
-        /// <returns></returns>
-        public IEnumerable<Transaction> GetTransactions(string csvFilePath)
+    /// <summary>
+    ///     Returns transactions from summary CSV file
+    /// </summary>
+    /// <param name="csvFilePath">Path of the csv file</param>
+    /// <returns></returns>
+    public IEnumerable<Transaction> GetTransactions(string csvFilePath)
+    {
+        using (var reader = new StreamReader(csvFilePath))
+            return GetTransactions(reader);
+    }
+
+    private bool IsTransactionRecord(CsvReader csv)
+    {
+        if (csv.GetField<string>(0) != "Trades")
         {
-            using (var reader = new StreamReader(csvFilePath))
-                return GetTransactions(reader);
+            return false;
         }
 
-        private bool IsTransactionRecord(CsvReader csv)
+        if (csv.GetField<string>("Header") != "Data")
         {
-            if (csv.GetField<string>(0) != "Trades")
-            {
-                return false;
-            }
-
-            if (csv.GetField<string>("Header") != "Data")
-            {
-                return false;
-            }
-
-            return csv.HeaderRecord.Contains("Realized P/L");
+            return false;
         }
+
+        return csv.HeaderRecord.Contains("Realized P/L");
     }
 }

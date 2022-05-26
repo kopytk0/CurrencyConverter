@@ -2,11 +2,9 @@
 using System.IO;
 using CurrencyConverter.TransactionProviders;
 
-namespace CurrencyConverter
-{
+namespace CurrencyConverter;
 
-    public interface IFileTransactionProvider
-    {
-        IEnumerable<Transaction> GetTransactions(TextReader reader);
-    }
+public interface IFileTransactionProvider
+{
+    IEnumerable<Transaction> GetTransactions(TextReader reader);
 }

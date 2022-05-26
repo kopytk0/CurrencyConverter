@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using CurrencyConverter.TransactionProviders;
 
-namespace CurrencyConverter
-{
+namespace CurrencyConverter;
 
-    public interface IApiTransactionProvider
-    {
-        IEnumerable<Transaction> GetTransactionsFromApi();
-    }
+public interface IApiTransactionProvider
+{
+    IEnumerable<Transaction> GetTransactionsFromApi();
 }
