@@ -11,10 +11,15 @@ var zlotys = converter.Convert(Currency.EUR, Currency.PLN, DateTime(2022, 05, 25
 ## Currency rate providers
 
 ### `EcbRateProvider`
-Gets currency conversion rates from European Central Bank.
+Gets currency conversion rates from European Central Bank. 
+Downloads yearly data and caches it for fast access (doesn't cache data downloaded with `GetRate(Currency, currency`
 
 ### `NbpRateProvider`
-Gets currency conversion rates from Narodowy Bank Polski
+Gets currency conversion rates from Narodowy Bank Polski. 
+Downloads yearly data and caches it for fast access (doesn't cache data downloaded with `GetRate(Currency, currency`
+
+### `CoinbaseRateProvider`
+Provides currency conversion rates from Coinbase.
 
 ## Broker transaction providers
 
