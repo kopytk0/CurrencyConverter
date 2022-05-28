@@ -52,7 +52,7 @@ namespace CurrencyConverter.CurrencyRateProviders
                 _rates.Add(sourceCurrency, rates);
             }
 
-            if (!rates.ContainsYear((ushort)date.Year))
+            if (!rates.ContainsRate(date))
             {
                 GetNbpRates(date.Year, sourceCurrency);
             }
@@ -104,7 +104,7 @@ namespace CurrencyConverter.CurrencyRateProviders
                 _rates.Add(sourceCurrency, rates);
             }
 
-            if (!rates.ContainsYear((ushort)date.Year))
+            if (!rates.ContainsRate(date))
             {
                 if (!TryGetNbpRates(date.Year, sourceCurrency)) return false;
             }

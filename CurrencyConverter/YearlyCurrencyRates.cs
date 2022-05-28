@@ -75,10 +75,16 @@ namespace CurrencyConverter
             }
 
             var lastKnownRate = default(decimal);
+            var today = DateTime.Today;
+
             for (var i = 0; i < array.Length; i++)
             {
                 if (array[i] == default)
                 {
+                    if(today.Year == year && today.DayOfYear - 1 < i)
+                    {
+                        break;
+                    }
                     array[i] = lastKnownRate;
                     continue;
                 }
