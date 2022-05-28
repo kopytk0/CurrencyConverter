@@ -11,11 +11,16 @@ A library for currency conversion
 
 - `NbpCurrencyProvider`
   - Provides currency conversion rates from Polish central bank
+  - Downloads yearly data and caches it (doesn't cache requests for newest rates)
   - Source: http://api.nbp.pl/
 - `EcbCurrencyProvider`
   - Provides currency conversion rates from European central bank
+  - Downloads yearly data and caches it (doesn't cache requests for newest rates)
   - Source: https://sdw-wsrest.ecb.europa.eu/
-  
+- `CoinbaseCurrencyProvider`
+  - Provides currency conversion rates from Coinbase
+  - Only supports latest rates
+  - Source: https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-exchange-rates
 ## Transaction providers:
 
 - `IbkrFileTransactionProvider`
