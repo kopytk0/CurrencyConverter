@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using CurrencyConverter.TransactionProviders;
+using Jakubqwe.CurrencyConverter.TransactionProviders;
 
-namespace CurrencyConverter
+namespace Jakubqwe.CurrencyConverter
 {
     public interface IApiTransactionProvider
     {

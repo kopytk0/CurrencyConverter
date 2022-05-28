@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CurrencyConverter.TransactionProviders
+namespace Jakubqwe.CurrencyConverter.TransactionProviders
 {
     public struct Transaction
     {

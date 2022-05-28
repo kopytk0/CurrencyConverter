@@ -6,7 +6,7 @@ using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
 
-namespace CurrencyConverter.TransactionProviders
+namespace Jakubqwe.CurrencyConverter.TransactionProviders
 {
     /// <summary>
     ///     This class provides transactions from IBKR from summary in CSV format

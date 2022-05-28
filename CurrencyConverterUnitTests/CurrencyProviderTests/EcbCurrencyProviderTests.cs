@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CurrencyConverter;
-using CurrencyConverter.CurrencyRateProviders;
+using Jakubqwe.CurrencyConverter;
+using Jakubqwe.CurrencyConverter.CurrencyRateProviders;
 using Xunit;
 
 namespace CurrencyConverterUnitTests
@@ -46,6 +46,18 @@ namespace CurrencyConverterUnitTests
 
             Assert.True(provider.TryGetRate(Currency.EUR, Currency.USD, new DateTime(2021, 01, 05), out rate));
             Assert.Equal(1.2271m, Decimal.Round(rate, 4));
+        }
+
+        [Fact]
+        public void GetLatestRateTest()
+        {
+            var provider = new EcbCurrencyProvider();
+
+            Assert.True(provider.GetRate(Currency.USD, Currency.CZK) > 1);
+            Assert.True(provider.GetRate(Currency.CZK, Currency.USD) < 1);
+            Assert.True(provider.GetRate(Currency.CZK, Currency.EUR) < 1);
+            Assert.True(provider.GetRate(Currency.EUR, Currency.CZK) > 1);
+            Assert.Equal(1m, provider.GetRate(Currency.EUR, Currency.EUR));
         }
 
         [Fact]

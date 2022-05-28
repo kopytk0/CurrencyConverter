@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CurrencyConverter
+namespace Jakubqwe.CurrencyConverter
 {
     public interface ICurrencyRateProvider // TODO: GetRate for latest data
     {
@@ -15,7 +15,11 @@ namespace CurrencyConverter
         decimal GetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date);
 
         /// <summary>
-        ///     Tries to get the conversion rate
+        ///     Gets the latest conversion rate
+        /// </summary>
+        decimal GetRate(Currency sourceCurrency, Currency targetCurrency);
+        /// <summary>
+        ///     Tries to get the conversion rate for given date
         /// </summary>
         bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate);
 

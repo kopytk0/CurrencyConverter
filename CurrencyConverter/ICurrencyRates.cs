@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CurrencyConverter
+namespace Jakubqwe.CurrencyConverter
 {
     internal interface ICurrencyRates
     {

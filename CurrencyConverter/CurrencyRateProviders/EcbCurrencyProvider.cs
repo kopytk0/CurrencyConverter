@@ -4,9 +4,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using CsvHelper;
 
-namespace CurrencyConverter.CurrencyRateProviders
+namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 {
     public class EcbCurrencyProvider : ICurrencyRateProvider
     {
@@ -57,6 +58,27 @@ namespace CurrencyConverter.CurrencyRateProviders
             EnsureRateIsCached(targetCurrency, date, yearlyRates);
 
             return yearlyRates.GetRate(date);
+        }
+
+        /// <inheritdoc />
+        public decimal GetRate(Currency sourceCurrency, Currency targetCurrency)
+        {
+            if (sourceCurrency == targetCurrency)
+            {
+                return 1m;
+            }
+
+            if (!TryGetLatestEcbRate(sourceCurrency, targetCurrency, out var rates))
+            {
+                throw new Exception("Could not get rates");
+            }
+
+            if (sourceCurrency != Currency.EUR)
+            {
+                return rates.Second / rates.First;
+            }
+
+            return rates.First;
         }
 
         /// <inheritdoc />
@@ -193,17 +215,81 @@ namespace CurrencyConverter.CurrencyRateProviders
             }
         }
 
-
         private string PrepareQuery(Currency sourceCurrency, Currency targetCurrency, int year)
         {
             return
                 $"https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.{sourceCurrency}.EUR.SP00.A?startPeriod={year}-01-01&endPeriod={year}-12-31&format=csvdata";
         }
 
+        private bool TryGetLatestEcbRate(Currency firstCurrency, Currency secondCurrency, out CurrencyRatesPair result)
+        {
+            if (firstCurrency == Currency.EUR)
+            {
+                (firstCurrency, secondCurrency) = (secondCurrency, firstCurrency);
+            }
+
+            result = default;
+            var client = new HttpClient();
+            var response = client.GetAsync(PrepareLatestQuery(firstCurrency, secondCurrency)).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            using (var reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+            {
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                    csv.Read();
+                    csv.ReadHeader();
+                    
+                    ParseLatestRecord(firstCurrency, ref result, csv);
+                    if (secondCurrency != Currency.EUR)
+                    {
+                        ParseLatestRecord(firstCurrency, ref result, csv);
+                    }
+                    else
+                    {
+                        result.Second = 1m;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private static void ParseLatestRecord(Currency firstCurrency, ref CurrencyRatesPair result, CsvReader csv)
+        {
+            csv.Read();
+            var data = csv.GetRecord<CsvConversionData>();
+            if (data.CURRENCY == firstCurrency)
+            {
+                result.First = data.OBS_VALUE;
+            }
+            else
+            {
+                result.Second = data.OBS_VALUE;
+            }
+        }
+
+        private string PrepareLatestQuery(Currency firstCurrency, Currency secondCurrency)
+        {
+            string currencyQuery = firstCurrency.ToString();
+            currencyQuery += secondCurrency != Currency.EUR ? $"+{secondCurrency}" : "";
+
+            return $"https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.{currencyQuery}.EUR.SP00.A?lastNObservations=1&format=csvdata";
+        }
+
+        internal struct CurrencyRatesPair
+        {
+            public decimal First;
+            public decimal Second;
+        }
         internal struct CsvConversionData
         {
             public DateTime TIME_PERIOD { get; set; }
             public decimal OBS_VALUE { get; set; }
+            public Currency CURRENCY{ get; set; }
         }
     }
 }

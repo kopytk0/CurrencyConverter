@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using CurrencyConverter;
-using CurrencyConverter.TransactionProviders;
+using Jakubqwe.CurrencyConverter;
+using Jakubqwe.CurrencyConverter.TransactionProviders;
 using Xunit;
 
 namespace CurrencyConverterUnitTests;

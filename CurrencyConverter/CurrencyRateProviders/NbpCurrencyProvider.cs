@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 
-namespace CurrencyConverter.CurrencyRateProviders
+namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 {
     public sealed class NbpCurrencyProvider : ICurrencyRateProvider
     {
@@ -68,9 +68,23 @@ namespace CurrencyConverter.CurrencyRateProviders
             return rate;
         }
 
-        /// <summary>
-        ///     Tries to get currency rate from the NBP api.
-        /// </summary>
+        public decimal GetRate(Currency sourceCurrency, Currency targetCurrency)
+        {
+            if (sourceCurrency == targetCurrency)
+            {
+                return 1m;
+            }
+
+            var rates = GetLatestNbpRates(sourceCurrency, targetCurrency);
+            if (targetCurrency != Currency.PLN)
+            {
+                return rates.Item2 / rates.Item1;
+            }
+
+            return rates.Item1;
+        }
+
+        /// <inheritdoc/>
         public bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate)
         {
             rate = default;
@@ -171,6 +185,37 @@ namespace CurrencyConverter.CurrencyRateProviders
 
                 yearlyRates.SetRates((ushort)year, rates);
             }
+        }
+
+        private (decimal, decimal) GetLatestNbpRates(Currency firstCurrency, Currency secondCurrency)
+        {
+            if (firstCurrency == Currency.PLN)
+            {
+                (firstCurrency, secondCurrency) = (secondCurrency, firstCurrency); 
+            }
+
+            var query = "https://api.nbp.pl/api/exchangerates/tables/A?format=json";
+            var client = new HttpClient();
+            var response = client.GetAsync(query).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("NbpCurrencyProvider: failed to get rates");
+            }
+
+            (Currency, decimal)[] rates;
+            using (var content = response.Content.ReadAsStreamAsync().Result)
+            {
+                var json = JsonDocument.Parse(content);
+                var jsonRates = json.RootElement[0].GetProperty("rates");
+                rates = jsonRates.EnumerateArray()
+                    .Select((e) => ((Currency)Enum.Parse(typeof(Currency), e.GetProperty("code").GetString()),
+                        e.GetProperty("mid").GetDecimal()))
+                    .Where(e => e.Item1 == firstCurrency || e.Item1 == secondCurrency)
+                    .ToArray();
+            }
+
+            return secondCurrency == Currency.PLN ? (rates[0].Item2, 1m) :
+                rates[0].Item1 == firstCurrency ? (rates[1].Item2, rates[0].Item2) : (rates[0].Item2, rates[1].Item2);
         }
     }
 }

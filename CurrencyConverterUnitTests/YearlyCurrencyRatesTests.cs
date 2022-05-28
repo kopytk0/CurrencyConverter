@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CurrencyConverter;
+using Jakubqwe.CurrencyConverter;
 using Xunit;
 
 namespace CurrencyConverterUnitTests;

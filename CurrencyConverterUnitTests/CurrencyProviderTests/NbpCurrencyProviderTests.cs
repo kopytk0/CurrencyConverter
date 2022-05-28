@@ -1,6 +1,6 @@
 ﻿using System;
-using CurrencyConverter;
-using CurrencyConverter.CurrencyRateProviders;
+using Jakubqwe.CurrencyConverter;
+using Jakubqwe.CurrencyConverter.CurrencyRateProviders;
 using Xunit;
 
 namespace CurrencyConverterUnitTests;
@@ -20,6 +20,18 @@ public class NbpCurrencyProviderTests
 
         Assert.Equal(0.27m, Decimal.Round(provider.GetRate(Currency.PLN, Currency.USD, new DateTime(2021, 01, 05)), 4));
         Assert.Equal(1.2272m, Decimal.Round(provider.GetRate(Currency.EUR, Currency.USD, new DateTime(2021, 01, 05)), 4));
+    }
+
+    [Fact]
+    public void GetLatestRateTest()
+    {
+        var provider = new NbpCurrencyProvider();
+        Assert.True(provider.GetRate(Currency.USD, Currency.PLN) > 1);
+        Assert.True(provider.GetRate(Currency.PLN, Currency.USD) < 1);
+        Assert.True(provider.GetRate(Currency.USD, Currency.CZK) > 1);
+        Assert.True(provider.GetRate(Currency.CZK, Currency.USD) < 1);
+
+        Assert.Equal(1m, provider.GetRate(Currency.PLN, Currency.PLN));
     }
 
     [Fact]

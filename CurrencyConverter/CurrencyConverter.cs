@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CurrencyConverter
+namespace Jakubqwe.CurrencyConverter
 {
     /// <summary>
     ///     This class is used to convert currencies
