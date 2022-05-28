@@ -1,7 +1,7 @@
 [![NuGet](https://img.shields.io/nuget/v/Jakubqwe.CurrencyConverter)](https://www.nuget.org/packages/Jakubqwe.CurrencyConverter/1.0.0)
 # Currency Converter
 
-A library to convert currencies and get transaction history from brokers' APIs 
+A library for currency conversion
 
 ## `CurrencyConverter`
 
