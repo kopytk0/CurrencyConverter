@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using CsvHelper;
 
 namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
@@ -242,7 +241,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 {
                     csv.Read();
                     csv.ReadHeader();
-                    
+
                     ParseLatestRecord(firstCurrency, ref result, csv);
                     if (secondCurrency != Currency.EUR)
                     {
@@ -274,10 +273,11 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 
         private string PrepareLatestQuery(Currency firstCurrency, Currency secondCurrency)
         {
-            string currencyQuery = firstCurrency.ToString();
+            var currencyQuery = firstCurrency.ToString();
             currencyQuery += secondCurrency != Currency.EUR ? $"+{secondCurrency}" : "";
 
-            return $"https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.{currencyQuery}.EUR.SP00.A?lastNObservations=1&format=csvdata";
+            return
+                $"https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.{currencyQuery}.EUR.SP00.A?lastNObservations=1&format=csvdata";
         }
 
         internal struct CurrencyRatesPair
@@ -285,11 +285,12 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
             public decimal First;
             public decimal Second;
         }
+
         internal struct CsvConversionData
         {
             public DateTime TIME_PERIOD { get; set; }
             public decimal OBS_VALUE { get; set; }
-            public Currency CURRENCY{ get; set; }
+            public Currency CURRENCY { get; set; }
         }
     }
 }

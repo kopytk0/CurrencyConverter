@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 {
     /// <summary>
-    /// Provides currency rates from Coinbase.
-    /// Only real time rates are supported.
+    ///     Provides currency rates from Coinbase.
+    ///     Only real time rates are supported.
     /// </summary>
     public class CoinbaseCurrencyProvider : ICurrencyRateProvider
     {
@@ -22,7 +18,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
         }
 
         /// <summary>
-        /// Historical rates are not supported. Throws <see cref="NotSupportedException"/>.
+        ///     Historical rates are not supported. Throws <see cref="NotSupportedException" />.
         /// </summary>
         public decimal GetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date)
         {
@@ -49,14 +45,14 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
             {
                 var json = JsonDocument.Parse(message);
                 var rate = json.RootElement.GetProperty("data").GetProperty("rates")
-                    .GetProperty(targetCurrency.ToString()).GetString() ?? throw new Exception("Failed to parse rate from Coinbase");
+                               .GetProperty(targetCurrency.ToString()).GetString() ??
+                           throw new Exception("Failed to parse rate from Coinbase");
                 return Decimal.Parse(rate, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
             }
-
         }
 
         /// <summary>
-        /// Historical rates are not supported. Throws <see cref="NotSupportedException"/>.
+        ///     Historical rates are not supported. Throws <see cref="NotSupportedException" />.
         /// </summary>
         public bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate)
         {
@@ -64,11 +60,10 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
         }
 
         /// <summary>
-        /// Does nothing as this provider has no caching.
+        ///     Does nothing as this provider has no caching.
         /// </summary>
         public void ClearCache()
         {
-            
         }
     }
 }

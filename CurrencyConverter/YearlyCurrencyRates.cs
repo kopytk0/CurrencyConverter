@@ -81,10 +81,11 @@ namespace Jakubqwe.CurrencyConverter
             {
                 if (array[i] == default)
                 {
-                    if(today.Year == year && today.DayOfYear - 1 < i)
+                    if (today.Year == year && today.DayOfYear - 1 < i)
                     {
                         break;
                     }
+
                     array[i] = lastKnownRate;
                     continue;
                 }

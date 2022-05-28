@@ -18,6 +18,7 @@ namespace Jakubqwe.CurrencyConverter
         ///     Gets the latest conversion rate
         /// </summary>
         decimal GetRate(Currency sourceCurrency, Currency targetCurrency);
+
         /// <summary>
         ///     Tries to get the conversion rate for given date
         /// </summary>

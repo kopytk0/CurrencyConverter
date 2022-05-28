@@ -2,8 +2,6 @@
 
 // ReSharper disable UnusedMember.Global
 
-using System;
-
 namespace Jakubqwe.CurrencyConverter
 {
     public enum Currency

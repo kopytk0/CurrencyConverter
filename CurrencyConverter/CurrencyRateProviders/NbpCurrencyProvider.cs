@@ -84,7 +84,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
             return rates.Item1;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate)
         {
             rate = default;
@@ -191,7 +191,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
         {
             if (firstCurrency == Currency.PLN)
             {
-                (firstCurrency, secondCurrency) = (secondCurrency, firstCurrency); 
+                (firstCurrency, secondCurrency) = (secondCurrency, firstCurrency);
             }
 
             var query = "https://api.nbp.pl/api/exchangerates/tables/A?format=json";
@@ -208,7 +208,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 var json = JsonDocument.Parse(content);
                 var jsonRates = json.RootElement[0].GetProperty("rates");
                 rates = jsonRates.EnumerateArray()
-                    .Select((e) => ((Currency)Enum.Parse(typeof(Currency), e.GetProperty("code").GetString()),
+                    .Select(e => ((Currency)Enum.Parse(typeof(Currency), e.GetProperty("code").GetString()),
                         e.GetProperty("mid").GetDecimal()))
                     .Where(e => e.Item1 == firstCurrency || e.Item1 == secondCurrency)
                     .ToArray();
