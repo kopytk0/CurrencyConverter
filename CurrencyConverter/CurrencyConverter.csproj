@@ -8,9 +8,9 @@
     <EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
     <Copyright>Jakub Bracha</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageDescription>A library for currency conversion and getting market transactions history</PackageDescription>
-    <PackageTags>currency converter;currency;tax;money</PackageTags>
-    <Version>1.0.0</Version>
+    <PackageDescription>A library for currency conversion</PackageDescription>
+    <PackageTags>currency converter;currency;tax;money;exchange;exchange-rate</PackageTags>
+    <Version>1.1.0</Version>
     <RepositoryUrl>https://github.com/jakubqwe/CurrencyConverter</RepositoryUrl>
     <AssemblyName>Jakubqwe.CurrencyConverter</AssemblyName>
     <RootNamespace>Jakubqwe.CurrencyConverter</RootNamespace>
