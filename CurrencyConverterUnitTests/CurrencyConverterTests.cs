@@ -14,6 +14,9 @@ public class CurrencyConverterTests
         Assert.Equal(10m, converter.Convert(Currency.USD, Currency.EUR, new DateTime(9, 9, 10), 1m));
         Assert.Equal(1m, converter.Convert(Currency.EUR, Currency.EUR, new DateTime(9, 9, 10), 1m));
         Assert.Throws<Exception>(() => converter.Convert(Currency.EUR, Currency.USD, new DateTime(9, 9, 10), 1m));
+
+        Assert.Equal(10m, converter.Convert(Currency.USD, Currency.EUR, 1m));
+        Assert.Equal(1m, converter.Convert(Currency.USD, Currency.USD, 1m));
     }
 
     [Fact]
@@ -64,7 +67,7 @@ public class CurrencyConverterTests
 
         public decimal GetRate(Currency sourceCurrency, Currency targetCurrency)
         {
-            throw new NotImplementedException();
+            return 10m;
         }
 
         public bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate)
