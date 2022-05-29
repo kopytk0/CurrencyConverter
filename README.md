@@ -1,4 +1,4 @@
-[![NuGet](https://img.shields.io/nuget/v/Jakubqwe.CurrencyConverter)](https://www.nuget.org/packages/Jakubqwe.CurrencyConverter/1.1.0)
+[![NuGet](https://img.shields.io/nuget/v/Jakubqwe.CurrencyConverter)](https://www.nuget.org/packages/Jakubqwe.CurrencyConverter/)
 # Currency Converter
 
 A library for currency conversion
