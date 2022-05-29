@@ -29,7 +29,20 @@ namespace Jakubqwe.CurrencyConverter
         }
 
         /// <summary>
-        ///     Converts currencies
+        ///     Converts currencies using latest rate
+        /// </summary>
+        public decimal Convert(Currency sourceCurrency, Currency targetCurrency, decimal amount)
+        {
+            if (sourceCurrency == targetCurrency)
+            {
+                return amount;
+            }
+
+            return amount * RateProvider.GetRate(sourceCurrency, targetCurrency);
+        }
+
+        /// <summary>
+        ///     Converts currencies using rate from specified date
         /// </summary>
         public decimal Convert(Currency sourceCurrency, Currency targetCurrency, DateTime date, decimal amount)
         {
@@ -38,12 +51,11 @@ namespace Jakubqwe.CurrencyConverter
                 return amount;
             }
 
-            var rate = RateProvider.GetRate(sourceCurrency, targetCurrency, date);
-            return amount * rate;
+            return amount * RateProvider.GetRate(sourceCurrency, targetCurrency, date);
         }
 
         /// <summary>
-        ///     Tries to convert currencies
+        ///     Tries to convert currencies using rate from specified date
         /// </summary>
         public bool TryConvert(Currency sourceCurrency, Currency targetCurrency, DateTime date, decimal amount,
             out decimal result)

@@ -10,7 +10,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageDescription>A library for currency conversion</PackageDescription>
     <PackageTags>currency converter;currency;tax;money;exchange;exchange-rate</PackageTags>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <RepositoryUrl>https://github.com/jakubqwe/CurrencyConverter</RepositoryUrl>
     <AssemblyName>Jakubqwe.CurrencyConverter</AssemblyName>
     <RootNamespace>Jakubqwe.CurrencyConverter</RootNamespace>
