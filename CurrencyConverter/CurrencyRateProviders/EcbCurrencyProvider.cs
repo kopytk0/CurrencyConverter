@@ -4,7 +4,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
 using CsvHelper;
+using Jakubqwe.CurrencyConverter.Helpers;
 
 namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 {
@@ -54,7 +58,10 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 _rates.Add(targetCurrency, yearlyRates);
             }
 
-            EnsureRateIsCached(targetCurrency, date, yearlyRates);
+            if (!yearlyRates.ContainsRate(date))
+            {
+                AsyncHelper.RunSync(() => EnsureRateIsCached(targetCurrency, date, yearlyRates));
+            }
 
             return yearlyRates.GetRate(date);
         }
@@ -113,7 +120,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 _rates.Add(targetCurrency, yearlyRates);
             }
 
-            if (!TryCacheRate(targetCurrency, date, yearlyRates))
+            if (!AsyncHelper.RunSync(() => TryCacheRate(targetCurrency, date, yearlyRates)));
             {
                 return false;
             }
@@ -131,13 +138,13 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
             return targetCurrency <= Currency.MXN && targetCurrency != Currency.UAH && targetCurrency != Currency.CLP;
         }
 
-        private bool TryCacheRate(Currency targetCurrency, DateTime date, YearlyCurrencyRates yearlyRates)
+        private async Task<bool> TryCacheRate(Currency targetCurrency, DateTime date, YearlyCurrencyRates yearlyRates)
         {
             if (targetCurrency == Currency.EUR) return true;
 
             if (!yearlyRates.ContainsRate(date))
             {
-                if (!TryGetEcbRates(date.Year, targetCurrency))
+                if (!await UpdateEcbRates(date.Year, targetCurrency).ConfigureAwait(false))
                 {
                     return false;
                 }
@@ -147,7 +154,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                     return true;
                 }
 
-                if (!TryGetEcbRates(date.Year - 1, targetCurrency))
+                if (!await UpdateEcbRates(date.Year - 1, targetCurrency).ConfigureAwait(false))
                 {
                     return false;
                 }
@@ -156,19 +163,19 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
             return true;
         }
 
-        private void EnsureRateIsCached(Currency targetCurrency, DateTime rateDate, YearlyCurrencyRates yearlyRates)
+        private async Task EnsureRateIsCached(Currency targetCurrency, DateTime rateDate, YearlyCurrencyRates yearlyRates)
         {
             if (targetCurrency == Currency.EUR) return;
 
-            if (EnsureYearIsCached(targetCurrency, rateDate, rateDate.Year, yearlyRates))
+            if (await EnsureYearIsCached(targetCurrency, rateDate, rateDate.Year, yearlyRates).ConfigureAwait(false))
             {
                 return;
             }
 
-            EnsureYearIsCached(targetCurrency, rateDate, rateDate.Year - 1, yearlyRates);
+            await EnsureYearIsCached(targetCurrency, rateDate, rateDate.Year - 1, yearlyRates).ConfigureAwait(false);
         }
 
-        private bool EnsureYearIsCached(Currency sourceCurrency, DateTime rateDate, int year,
+        private async Task<bool> EnsureYearIsCached(Currency sourceCurrency, DateTime rateDate, int year,
             YearlyCurrencyRates yearlyRates)
         {
             if (yearlyRates.ContainsRate(rateDate))
@@ -176,7 +183,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 return true;
             }
 
-            if (!TryGetEcbRates(year, sourceCurrency))
+            if (!await UpdateEcbRates(year, sourceCurrency))
             {
                 throw new Exception($"Could not get ECB rates for year {year}");
             }
@@ -184,27 +191,28 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
             return false;
         }
 
-        private bool TryGetEcbRates(int year, Currency targetCurrency)
+        private async Task<bool> UpdateEcbRates(int year, Currency targetCurrency)
         {
             if (!_rates.TryGetValue(targetCurrency, out var yearlyRates))
             {
-                throw new InvalidDataException("Rates not found"); // this should never happen
+                Debug.Fail($"Could not get yearly rates for currency {targetCurrency}");
+                return false;
             }
 
             var client = new HttpClient();
-            var response = client.GetAsync(PrepareQuery(targetCurrency, Currency.EUR, year)).Result;
+            var response = await client.GetAsync(PrepareQuery(targetCurrency, Currency.EUR, year)).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 return false;
             }
 
-            yearlyRates.SetRates((ushort)year, ParseRecords(response.Content));
+            yearlyRates.SetRates((ushort)year, await ParseRecords(response.Content));
             return true;
         }
 
-        private IEnumerable<KeyValuePair<DateTime, decimal>> ParseRecords(HttpContent content)
+        private async Task<IEnumerable<KeyValuePair<DateTime, decimal>>> ParseRecords(HttpContent content)
         {
-            using (var reader = new StreamReader(content.ReadAsStreamAsync().Result))
+            using (var reader = new StreamReader(await content.ReadAsStreamAsync().ConfigureAwait(false)))
             {
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
@@ -235,7 +243,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 return false;
             }
 
-            using (var reader = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+            using (var reader = new StreamReader(AsyncHelper.RunSync(() => response.Content.ReadAsStreamAsync())))
             {
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {

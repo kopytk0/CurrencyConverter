@@ -2,7 +2,7 @@
 
 namespace Jakubqwe.CurrencyConverter
 {
-    public interface ICurrencyRateProvider // TODO: GetRate for latest data
+    public interface ICurrencyRateProvider
     {
         /// <summary>
         ///     Checks if conversion can be handled
@@ -23,7 +23,5 @@ namespace Jakubqwe.CurrencyConverter
         ///     Tries to get the conversion rate for given date
         /// </summary>
         bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate);
-
-        void ClearCache();
     }
 }

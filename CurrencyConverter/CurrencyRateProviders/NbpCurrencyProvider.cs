@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Jakubqwe.CurrencyConverter.Helpers;
 
 namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 {
@@ -54,14 +56,14 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 
             if (!rates.ContainsRate(date))
             {
-                GetNbpRates(date.Year, sourceCurrency);
+                AsyncHelper.RunSync(() => GetNbpRates(date.Year, sourceCurrency));
             }
 
             rates.TryGetRate(date, out var rate);
 
             if (rate == default)
             {
-                GetNbpRates(date.Year - 1, sourceCurrency);
+                GetNbpRates(date.Year - 1, sourceCurrency).ConfigureAwait(false);
                 rate = rates.GetRate(date);
             }
 
@@ -75,7 +77,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 return 1m;
             }
 
-            var rates = GetLatestNbpRates(sourceCurrency, targetCurrency);
+            var rates = AsyncHelper.RunSync(() => GetLatestNbpRates(sourceCurrency, targetCurrency));
             if (targetCurrency != Currency.PLN)
             {
                 return rates.Item2 / rates.Item1;
@@ -120,7 +122,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 
             if (!rates.ContainsRate(date))
             {
-                if (!TryGetNbpRates(date.Year, sourceCurrency)) return false;
+                if (!AsyncHelper.RunSync(() => TryGetNbpRates(date.Year, sourceCurrency))) return false;
             }
 
             rates.TryGetRate(date, out var multiplier);
@@ -128,7 +130,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 
             if (rate == default)
             {
-                if (!TryGetNbpRates(date.Year - 1, sourceCurrency)) return false;
+                if (!AsyncHelper.RunSync(() => TryGetNbpRates(date.Year - 1, sourceCurrency))) return false;
                 rate = rates.GetRate(date);
             }
 
@@ -140,11 +142,11 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
             _rates.Clear();
         }
 
-        private bool TryGetNbpRates(int year, Currency sourceCurrency)
+        private async Task<bool> TryGetNbpRates(int year, Currency sourceCurrency)
         {
             try
             {
-                GetNbpRates(year, sourceCurrency);
+                await GetNbpRates(year, sourceCurrency).ConfigureAwait(false);
                 return true;
             }
             catch (Exception) // failure should happen rarely so try catch is enough here
@@ -153,7 +155,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
             }
         }
 
-        private void GetNbpRates(int year, Currency sourceCurrency)
+        private async Task GetNbpRates(int year, Currency sourceCurrency)
         {
             if (!_rates.TryGetValue(sourceCurrency, out var yearlyRates))
             {
@@ -172,9 +174,9 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 throw new Exception("NbpCurrencyProvider: failed to get rates");
             }
 
-            using (var content = response.Content.ReadAsStreamAsync().Result)
+            using (var contentStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
             {
-                var json = JsonDocument.Parse(content);
+                var json = JsonDocument.Parse(contentStream);
                 var jsonRates = json.RootElement.GetProperty("rates");
 
                 var rates = jsonRates.EnumerateArray().Select(e =>
@@ -187,7 +189,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
             }
         }
 
-        private (decimal, decimal) GetLatestNbpRates(Currency firstCurrency, Currency secondCurrency)
+        private async Task<(decimal, decimal)> GetLatestNbpRates(Currency firstCurrency, Currency secondCurrency)
         {
             if (firstCurrency == Currency.PLN)
             {
@@ -196,16 +198,16 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 
             var query = "https://api.nbp.pl/api/exchangerates/tables/A?format=json";
             var client = new HttpClient();
-            var response = client.GetAsync(query).Result;
+            var response = await client.GetAsync(query).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("NbpCurrencyProvider: failed to get rates");
             }
 
             (Currency, decimal)[] rates;
-            using (var content = response.Content.ReadAsStreamAsync().Result)
+            using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false)) // TODO: change .result to await
             {
-                var json = JsonDocument.Parse(content);
+                var json = await JsonDocument.ParseAsync(content);
                 var jsonRates = json.RootElement[0].GetProperty("rates");
                 rates = jsonRates.EnumerateArray()
                     .Select(e => ((Currency)Enum.Parse(typeof(Currency), e.GetProperty("code").GetString()),

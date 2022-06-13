@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Net.Http;
 using System.Text.Json;
+using Jakubqwe.CurrencyConverter.Helpers;
 
 namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 {
@@ -38,12 +40,12 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
             var response = client.GetAsync(query).Result;
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Failed to get rate from Coinbase");
+                throw new InvalidOperationException("Failed to get rate from Coinbase");
             }
 
-            using (var message = response.Content.ReadAsStreamAsync().Result)
+            using (var messageStream = AsyncHelper.RunSync(() => response.Content.ReadAsStreamAsync()))
             {
-                var json = JsonDocument.Parse(message);
+                var json = JsonDocument.Parse(messageStream);
                 var rate = json.RootElement.GetProperty("data").GetProperty("rates")
                                .GetProperty(targetCurrency.ToString()).GetString() ??
                            throw new Exception("Failed to parse rate from Coinbase");
@@ -57,13 +59,6 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
         public bool TryGetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date, out decimal rate)
         {
             throw new NotSupportedException("Coinbase does not support historical rates");
-        }
-
-        /// <summary>
-        ///     Does nothing as this provider has no caching.
-        /// </summary>
-        public void ClearCache()
-        {
         }
     }
 }
