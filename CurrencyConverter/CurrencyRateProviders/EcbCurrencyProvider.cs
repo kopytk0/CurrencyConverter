@@ -271,7 +271,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 
             if (!yearlyRates.ContainsRate(date))
             {
-                await EnsureRateIsCached(targetCurrency, date, yearlyRates);
+                await EnsureRateIsCached(targetCurrency, date, yearlyRates).ConfigureAwait(false);
             }
 
             return yearlyRates.GetRate(date);
@@ -285,7 +285,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 return 1m;
             }
 
-            var ratesResult = await TryGetLatestEcbRate(sourceCurrency, targetCurrency);
+            var ratesResult = await TryGetLatestEcbRate(sourceCurrency, targetCurrency).ConfigureAwait(false);
 
             if (!ratesResult.Success)
             {

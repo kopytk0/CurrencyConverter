@@ -71,7 +71,7 @@ namespace Jakubqwe.CurrencyConverter
                 return amount;
             }
 
-            return amount * await asyncRateProvider.GetRateAsync(sourceCurrency, targetCurrency, date);
+            return amount * await asyncRateProvider.GetRateAsync(sourceCurrency, targetCurrency, date).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Jakubqwe.CurrencyConverter
                 return amount;
             }
 
-            return amount * await asyncRateProvider.GetRateAsync(sourceCurrency, targetCurrency);
+            return amount * await asyncRateProvider.GetRateAsync(sourceCurrency, targetCurrency).ConfigureAwait(false);
         }
 
         /// <summary>
