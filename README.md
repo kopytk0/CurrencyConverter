@@ -16,6 +16,7 @@ A library for currency conversion
 - `EcbCurrencyProvider`
   - Provides currency conversion rates from European central bank
   - Downloads yearly data and caches it (doesn't cache requests for newest rates)
+  - Has asynchronous methods
   - Source: https://sdw-wsrest.ecb.europa.eu/
 - `CoinbaseCurrencyProvider`
   - Provides currency conversion rates from Coinbase
