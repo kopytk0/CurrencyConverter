@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Jakubqwe.CurrencyConverter
 {
@@ -16,7 +17,7 @@ namespace Jakubqwe.CurrencyConverter
         /// <summary>
         ///     Provider to get rates from
         /// </summary>
-        public ICurrencyRateProvider RateProvider { get; set; }
+        public virtual ICurrencyRateProvider RateProvider { get; set; }
 
         public bool CanHandle(Currency sourceCurrency, Currency targetCurrency)
         {
@@ -52,6 +53,44 @@ namespace Jakubqwe.CurrencyConverter
             }
 
             return amount * RateProvider.GetRate(sourceCurrency, targetCurrency, date);
+        }
+
+        /// <summary>
+        ///     Converts currencies using rate from specified date asynchronously, if the rate provider supports it.
+        ///     Supported providers - EcbCurrencyProvider
+        /// </summary>
+        public async Task<decimal> ConvertAsync(Currency sourceCurrency, Currency targetCurrency, DateTime date, decimal amount)
+        {
+            if(!(RateProvider is ICurrencyRateProviderAsync asyncRateProvider))
+            {
+                throw new NotSupportedException($"Rate provider doesn't {nameof(RateProvider)} support async conversion");
+            }
+
+            if (sourceCurrency == targetCurrency)
+            {
+                return amount;
+            }
+
+            return amount * await asyncRateProvider.GetRateAsync(sourceCurrency, targetCurrency, date);
+        }
+
+        /// <summary>
+        ///     Converts currencies using the newest rate asynchronously, if the rate provider supports it.
+        ///     Supported providers - EcbCurrencyProvider
+        /// </summary>
+        public async Task<decimal> ConvertAsync(Currency sourceCurrency, Currency targetCurrency, decimal amount)
+        {
+            if (!(RateProvider is ICurrencyRateProviderAsync asyncRateProvider))
+            {
+                throw new NotSupportedException($"Rate provider doesn't {nameof(RateProvider)} support async conversion");
+            }
+
+            if (sourceCurrency == targetCurrency)
+            {
+                return amount;
+            }
+
+            return amount * await asyncRateProvider.GetRateAsync(sourceCurrency, targetCurrency);
         }
 
         /// <summary>

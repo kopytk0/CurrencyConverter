@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using CsvHelper;
@@ -12,7 +11,7 @@ using Jakubqwe.CurrencyConverter.Helpers;
 
 namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 {
-    public class EcbCurrencyProvider : ICurrencyRateProvider
+    public class EcbCurrencyProvider : ICurrencyRateProviderAsync
     {
         private static readonly Dictionary<Currency, YearlyCurrencyRates> _rates =
             new Dictionary<Currency, YearlyCurrencyRates>(); // Euro to Currency
@@ -30,61 +29,13 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
         /// <inheritdoc />
         public decimal GetRate(Currency sourceCurrency, Currency targetCurrency, DateTime date)
         {
-            if (DateTime.Now.Date < date)
-            {
-                throw new ArgumentException("Date cannot be in the future");
-            }
-
-            if (sourceCurrency == targetCurrency)
-            {
-                return 1m;
-            }
-
-            if (sourceCurrency != Currency.EUR)
-            {
-                return GetRate(Currency.EUR, targetCurrency, date) / GetRate(Currency.EUR, sourceCurrency, date);
-            }
-
-            if (!CanHandle(sourceCurrency, targetCurrency))
-            {
-                throw
-                    new NotSupportedException(
-                        "Conversion not supported by ECB"); // TODO: Create CurrencyConversionNotSupportedException
-            }
-
-            if (!_rates.TryGetValue(targetCurrency, out var yearlyRates))
-            {
-                yearlyRates = new YearlyCurrencyRates(Currency.EUR, targetCurrency);
-                _rates.Add(targetCurrency, yearlyRates);
-            }
-
-            if (!yearlyRates.ContainsRate(date))
-            {
-                AsyncHelper.RunSync(() => EnsureRateIsCached(targetCurrency, date, yearlyRates));
-            }
-
-            return yearlyRates.GetRate(date);
+            return AsyncHelper.RunSync(() => GetRateAsync(sourceCurrency, targetCurrency, date));
         }
 
         /// <inheritdoc />
         public decimal GetRate(Currency sourceCurrency, Currency targetCurrency)
         {
-            if (sourceCurrency == targetCurrency)
-            {
-                return 1m;
-            }
-
-            if (!TryGetLatestEcbRate(sourceCurrency, targetCurrency, out var rates))
-            {
-                throw new Exception("Could not get rates");
-            }
-
-            if (sourceCurrency != Currency.EUR)
-            {
-                return rates.Second / rates.First;
-            }
-
-            return rates.First;
+            return AsyncHelper.RunSync(() => GetRateAsync(sourceCurrency, targetCurrency));
         }
 
         /// <inheritdoc />
@@ -120,7 +71,7 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 _rates.Add(targetCurrency, yearlyRates);
             }
 
-            if (!AsyncHelper.RunSync(() => TryCacheRate(targetCurrency, date, yearlyRates)));
+            if (!AsyncHelper.RunSync(() => TryCacheRate(targetCurrency, date, yearlyRates)))
             {
                 return false;
             }
@@ -228,19 +179,18 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                 $"https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.{sourceCurrency}.EUR.SP00.A?startPeriod={year}-01-01&endPeriod={year}-12-31&format=csvdata";
         }
 
-        private bool TryGetLatestEcbRate(Currency firstCurrency, Currency secondCurrency, out CurrencyRatesPair result)
+        private async Task<(bool Success, CurrencyRatesPair Rates)> TryGetLatestEcbRate(Currency firstCurrency, Currency secondCurrency)
         {
             if (firstCurrency == Currency.EUR)
             {
                 (firstCurrency, secondCurrency) = (secondCurrency, firstCurrency);
             }
-
-            result = default;
+            CurrencyRatesPair rates = default;
             var client = new HttpClient();
-            var response = client.GetAsync(PrepareLatestQuery(firstCurrency, secondCurrency)).Result;
+            var response = await client.GetAsync(PrepareLatestQuery(firstCurrency, secondCurrency));
             if (!response.IsSuccessStatusCode)
             {
-                return false;
+                return (false, rates);
             }
 
             using (var reader = new StreamReader(AsyncHelper.RunSync(() => response.Content.ReadAsStreamAsync())))
@@ -250,19 +200,19 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
                     csv.Read();
                     csv.ReadHeader();
 
-                    ParseLatestRecord(firstCurrency, ref result, csv);
+                    ParseLatestRecord(firstCurrency, ref rates, csv);
                     if (secondCurrency != Currency.EUR)
                     {
-                        ParseLatestRecord(firstCurrency, ref result, csv);
+                        ParseLatestRecord(firstCurrency, ref rates, csv);
                     }
                     else
                     {
-                        result.Second = 1m;
+                        rates.Second = 1m;
                     }
                 }
             }
 
-            return true;
+            return (true, rates);
         }
 
         private static void ParseLatestRecord(Currency firstCurrency, ref CurrencyRatesPair result, CsvReader csv)
@@ -286,6 +236,68 @@ namespace Jakubqwe.CurrencyConverter.CurrencyRateProviders
 
             return
                 $"https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.{currencyQuery}.EUR.SP00.A?lastNObservations=1&format=csvdata";
+        }
+
+        /// <inheritdoc />
+        public async Task<decimal> GetRateAsync(Currency sourceCurrency, Currency targetCurrency, DateTime date)
+        {
+            if (DateTime.Now.Date < date)
+            {
+                throw new ArgumentException("Date cannot be in the future");
+            }
+
+            if (sourceCurrency == targetCurrency)
+            {
+                return 1m;
+            }
+
+            if (sourceCurrency != Currency.EUR)
+            {
+                return GetRate(Currency.EUR, targetCurrency, date) / GetRate(Currency.EUR, sourceCurrency, date);
+            }
+
+            if (!CanHandle(sourceCurrency, targetCurrency))
+            {
+                throw
+                    new NotSupportedException(
+                        "Conversion not supported by ECB"); // TODO: Create CurrencyConversionNotSupportedException
+            }
+
+            if (!_rates.TryGetValue(targetCurrency, out var yearlyRates))
+            {
+                yearlyRates = new YearlyCurrencyRates(Currency.EUR, targetCurrency);
+                _rates.Add(targetCurrency, yearlyRates);
+            }
+
+            if (!yearlyRates.ContainsRate(date))
+            {
+                await EnsureRateIsCached(targetCurrency, date, yearlyRates);
+            }
+
+            return yearlyRates.GetRate(date);
+        }
+
+        /// <inheritdoc />
+        public async Task<decimal> GetRateAsync(Currency sourceCurrency, Currency targetCurrency)
+        {
+            if (sourceCurrency == targetCurrency)
+            {
+                return 1m;
+            }
+
+            var ratesResult = await TryGetLatestEcbRate(sourceCurrency, targetCurrency);
+
+            if (!ratesResult.Success)
+            {
+                throw new Exception("Could not get rates");
+            }
+
+            if (sourceCurrency != Currency.EUR)
+            {
+                return ratesResult.Rates.Second / ratesResult.Rates.First;
+            }
+
+            return ratesResult.Rates.First;
         }
 
         internal struct CurrencyRatesPair
