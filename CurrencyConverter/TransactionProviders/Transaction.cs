@@ -7,5 +7,6 @@ namespace Jakubqwe.CurrencyConverter.TransactionProviders
         public Currency BaseCurrency;
         public decimal Income;
         public DateTime Date;
+        public string Description;
     }
 }

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Jakubqwe.CurrencyConverter
 {
-    internal interface ICurrencyRateProviderAsync : ICurrencyRateProvider
+    public interface ICurrencyRateProviderAsync : ICurrencyRateProvider
     {
         /// <summary>
         ///     Gets the conversion rate for given date asynchronously
