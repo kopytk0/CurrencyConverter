@@ -1,9 +1,11 @@
 name: NuGet Generation
 
-inputs:
-  version:
-    description: 'Version of the package'
-    required: true
+on:
+ workflow_dispatch:
+  inputs:
+    version:
+      description: 'Version of the package'
+      required: true
 
 jobs:
   build:
