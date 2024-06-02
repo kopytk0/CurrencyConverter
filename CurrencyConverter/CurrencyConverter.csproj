@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net7.0;netstandard2.1;netstandard2.0</TargetFrameworks>
     <ImplicitUsings>disable</ImplicitUsings>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Authors>jakubqwe</Authors>
@@ -10,7 +10,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageDescription>A library for currency conversion</PackageDescription>
     <PackageTags>currency converter;currency;tax;money;exchange;exchange-rate</PackageTags>
-    <Version>1.1.1</Version>
+    <Version>1.2.1</Version>
     <RepositoryUrl>https://github.com/jakubqwe/CurrencyConverter</RepositoryUrl>
     <AssemblyName>Jakubqwe.CurrencyConverter</AssemblyName>
     <RootNamespace>Jakubqwe.CurrencyConverter</RootNamespace>
@@ -18,6 +18,8 @@
     <Description>A library for currency conversion</Description>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Currency Converter</Title>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,7 +44,7 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="30.0.1" />
-    <PackageReference Include="System.Text.Json" Version="7.0.3" />
+    <PackageReference Include="System.Text.Json" Version="8.0.1" />
   </ItemGroup>
 
 </Project>

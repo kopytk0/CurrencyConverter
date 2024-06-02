@@ -38,7 +38,8 @@ namespace Jakubqwe.CurrencyConverter.TransactionProviders
                     {
                         BaseCurrency = csv.GetField<Currency>("Currency"),
                         Income = csv.GetField<decimal>("Realized P/L"),
-                        Date = csv.GetField<DateTime>("Date/Time")
+                        Date = csv.GetField<DateTime>("Date/Time"),
+                        Description = csv.GetField<string>("Symbol")
                     };
 
                     yield return transaction;

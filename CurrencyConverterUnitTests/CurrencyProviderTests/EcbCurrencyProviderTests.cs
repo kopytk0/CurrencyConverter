@@ -38,7 +38,7 @@ namespace CurrencyConverterUnitTests
             Assert.True(provider.TryGetRate(Currency.EUR, Currency.EUR, new DateTime(2020, 01, 01), out rate));
             Assert.Equal(1m, rate);
 
-            Assert.False(provider.TryGetRate(Currency.USD, Currency.EUR, new DateTime(2023, 01, 05), out rate));
+            Assert.False(provider.TryGetRate(Currency.USD, Currency.EUR, DateTime.Today.AddDays(1), out rate));
             Assert.Equal(default, rate);
 
             Assert.True(provider.TryGetRate(Currency.USD, Currency.PLN, new DateTime(2021, 01, 05), out rate));
