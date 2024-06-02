@@ -9,6 +9,7 @@ on:
 
 jobs:
   build:
+    if: github.actor == 'kopytk0'
     runs-on: ubuntu-18.04
     name: Push version ${{github.event.inputs.version}} to Nuget
     steps:
