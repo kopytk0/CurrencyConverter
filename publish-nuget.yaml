@@ -1,0 +1,32 @@
+name: NuGet Generation
+
+inputs:
+  version:
+    description: 'Version of the package'
+    required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    name: Push version ${{github.event.inputs.version}} to Nuget
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+
+      - name: Setup .NET Core @ Latest
+        uses: actions/setup-dotnet@v1
+        with:
+          source-url: https://nuget.pkg.github.com/<organization>/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.NUGET_TOKEN}}        
+         
+      - name: Set version
+        run: sed -i "s/\(<Version>\([0-9]\+\.\)\{2\}\)\([0-9]\+\)/\1${{github.event.inputs.version}}/" CurrencyConverter/CurrencyConverter.csproj
+
+      - name: Build solution and generate NuGet package
+        run: |  
+          cd CurrencyConverter
+          dotnet pack -c Release -o out  
+
+      - name: Push generated package to GitHub registry
+        run: dotnet nuget push ./CurrencyConverter/out/*.nupkg --skip-duplicate --no-symbols true
