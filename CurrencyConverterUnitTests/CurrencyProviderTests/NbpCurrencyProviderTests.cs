@@ -46,7 +46,7 @@ public class NbpCurrencyProviderTests
         Assert.True(provider.TryGetRate(Currency.PLN, Currency.PLN, new DateTime(2021, 01, 01), out rate));
         Assert.Equal(1m, rate);
 
-        Assert.False(provider.TryGetRate(Currency.USD, Currency.PLN, new DateTime(2023, 01, 05), out rate));
+        Assert.False(provider.TryGetRate(Currency.USD, Currency.PLN, DateTime.Today.AddDays(1), out rate));
         Assert.Equal(default, rate);
 
         Assert.True(provider.TryGetRate(Currency.PLN, Currency.USD, new DateTime(2021, 01, 05), out rate));
