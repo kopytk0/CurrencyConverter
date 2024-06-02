@@ -12,9 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backupcode", "backupcode", 
 		CurrencyConverter\CurrencyRateProviders\CurrencyProviderFactory.cs = CurrencyConverter\CurrencyRateProviders\CurrencyProviderFactory.cs
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{FCCE8767-7A0E-435B-A78C-99A3DFA5824E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{74ECFBB4-D356-4F78-9A0A-7E2CE8805110}"
 	ProjectSection(SolutionItems) = preProject
-		publish-nuget.yaml = publish-nuget.yaml
+		pipelines\publish-nuget.yaml = pipelines\publish-nuget.yaml
 	EndProjectSection
 EndProject
 Global
